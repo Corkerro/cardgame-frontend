@@ -1,4 +1,4 @@
-import '../assets/styles/loader.scss'
+import '../assets/styles/loader.scss';
 
 export default function Loader() {
     return (

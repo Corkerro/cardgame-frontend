@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
-import Loader from "./Loader.jsx";
+import Loader from './Loader.jsx';
 
 export default function RequireAuth() {
     const [loading, setLoading] = useState(true);

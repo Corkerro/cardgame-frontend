@@ -13,4 +13,3 @@ export default function FormInput({ name, placeholder, value, onChange }) {
         />
     );
 }
-

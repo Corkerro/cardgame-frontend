@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react';
 import '../assets/styles/findgame.scss';
 import UserItem from './components/user/UserItem.jsx';
 import axios from 'axios';
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify';
 
 const possibleNames = [
-    'SkullSlasher', 'CardMaster', 'AceKing', 'DarkDealer', 'QueenCrusher',
-    'RedJack', 'FoldedFate', 'BluffBot', 'StackRunner', 'DealerX'
+    'SkullSlasher',
+    'CardMaster',
+    'AceKing',
+    'DarkDealer',
+    'QueenCrusher',
+    'RedJack',
+    'FoldedFate',
+    'BluffBot',
+    'StackRunner',
+    'DealerX',
 ];
 
 export default function FindGamePage() {
@@ -46,7 +54,6 @@ export default function FindGamePage() {
                 clearInterval(nameInterval);
                 clearInterval(timer);
                 setEnemyName(response.data.enemyName || 'EnemyPlayer');
-
             } catch (error) {
                 clearInterval(nameInterval);
                 clearInterval(timer);
