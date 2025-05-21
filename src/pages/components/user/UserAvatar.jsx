@@ -31,9 +31,11 @@ export default function UserAvatar({ avatarUrl, onFileSelect }) {
                 style={{ display: 'none' }}
                 id="avatarFileInput"
             />
-            <label htmlFor="avatarFileInput" className="user__avatar_upload-btn">
-                <img src="upload.svg" alt="" />
-            </label>
+            {onFileSelect && (
+                <label htmlFor="avatarFileInput" className="user__avatar_upload-btn">
+                    <img src="upload.svg" alt="" />
+                </label>
+            )}
         </div>
     );
 }

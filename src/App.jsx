@@ -8,6 +8,7 @@ import './assets/styles/reset.css';
 import './assets/styles/base.scss';
 import GamePage from './pages/GamePage.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
+import FindGamePage from "./pages/FindGamePage.jsx";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 <Route element={<RequireAuth />}>
                     <Route path="/" element={<LobbyPage />} />
                     <Route path="/game" element={<GamePage />} />
+                    <Route path="/find-game" element={<FindGamePage />} />
                 </Route>
 
                 {/* other routes */}

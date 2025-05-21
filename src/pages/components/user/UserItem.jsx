@@ -4,11 +4,11 @@ import { toast } from 'react-toastify';
 import UserAvatar from './UserAvatar';
 import '../../../assets/styles/user.scss';
 
-export default function UserItem({ initialAvatarUrl, userName, otherClasses }) {
+export default function UserItem({ initialAvatarUrl, userName, otherClasses, editable = false }) {
     const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
 
     const handleFileSelect = async (file) => {
-        if (!file) return;
+        if (!file || !editable) return;
 
         const objectUrl = URL.createObjectURL(file);
         setAvatarUrl(objectUrl);
@@ -47,7 +47,7 @@ export default function UserItem({ initialAvatarUrl, userName, otherClasses }) {
 
     return (
         <div className={`user__wrapper ${otherClasses}`}>
-            <UserAvatar avatarUrl={avatarUrl} onFileSelect={handleFileSelect} />
+            <UserAvatar avatarUrl={avatarUrl} onFileSelect={editable ? handleFileSelect : null} />
             <p className="user__name">{userName}</p>
         </div>
     );

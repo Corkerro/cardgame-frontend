@@ -7,7 +7,7 @@ export default function LobbyPage() {
     const navigate = useNavigate();
 
     const handlePlayClick = () => {
-        navigate('/game');
+        navigate('/find-game');
     };
 
     return (
@@ -15,7 +15,7 @@ export default function LobbyPage() {
             <div className="lobby__container">
                 <img src="logo.png" alt="Acehole" />
 
-                <UserItem userName={'User1'} />
+                <UserItem userName={'User1'} editable={true} />
 
                 <button type="button" className="button lobby__button" onClick={handlePlayClick}>
                     PLAY
