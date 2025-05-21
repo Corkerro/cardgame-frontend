@@ -93,13 +93,13 @@ export default function FindGamePage() {
                 <img src="logo.png" alt="Acehole" />
 
                 <div className="findgame__search">
-                    <UserItem userName={'You'} />
+                    <UserItem userName={'UserName'} />
                     <p>VS</p>
                     <UserItem userName={enemyName} otherClasses={'reverse'} />
                 </div>
 
                 <p className="findgame__timer">
-                    {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '0:00'}
+                    {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '00:00'}
                 </p>
 
                 <button
