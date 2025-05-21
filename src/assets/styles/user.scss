@@ -15,6 +15,13 @@
                 }
             }
         }
+        &:not(.center) {
+            .user {
+                &__name {
+                    width: 150px;
+                }
+            }
+        }
     }
 
     &__avatar {
@@ -48,7 +55,6 @@
         font-size: 24px;
         font-weight: bold;
 
-        width: 150px;
         text-overflow: ellipsis;
     }
 }

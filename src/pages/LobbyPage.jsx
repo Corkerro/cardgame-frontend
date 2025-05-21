@@ -15,7 +15,7 @@ export default function LobbyPage() {
             <div className="lobby__container">
                 <img src="logo.png" alt="Acehole" />
 
-                <UserItem userName={'User1'} editable={true} />
+                <UserItem userName={'User1'} editable={true} otherClasses={'center'} />
 
                 <button type="button" className="button lobby__button" onClick={handlePlayClick}>
                     PLAY
