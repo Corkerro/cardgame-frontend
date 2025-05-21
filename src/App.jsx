@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './assets/styles/reset.css';
 import './assets/styles/base.scss';
+import GamePage from "./pages/GamePage.jsx";
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
             <Routes>
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/" element={<LobbyPage />} />
+                <Route path="/game" element={<GamePage />} />
                 {/* other routes */}
             </Routes>
             <ToastContainer

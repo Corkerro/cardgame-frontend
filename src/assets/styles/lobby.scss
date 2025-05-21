@@ -1,4 +1,9 @@
 .lobby {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     &__container {
         padding-top: 20px;
         display: flex;
