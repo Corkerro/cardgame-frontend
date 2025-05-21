@@ -1,0 +1,12 @@
+@use 'input';
+
+.input-submit {
+    padding: 8px 48px;
+    border-radius: 24px;
+
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--font-color-3);
+
+    cursor: pointer;
+}

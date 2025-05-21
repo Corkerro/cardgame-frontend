@@ -1,0 +1,30 @@
+.user {
+    &__wrapper {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        margin: 0 auto;
+
+        &.reverse {
+            flex-direction: row-reverse;
+        }
+    }
+
+    &__avatar {
+        position: relative;
+
+        &_placeholder {
+            width: 64px;
+            height: 64px;
+            border-radius: 100%;
+            background: var(--font-color-3);
+        }
+    }
+
+    &__name {
+        color: var(--font-color-3);
+        font-size: 24px;
+        font-weight: bold;
+    }
+}
