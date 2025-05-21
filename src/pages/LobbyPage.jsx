@@ -1,8 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../assets/styles/lobby.scss';
 import UserItem from './components/user/UserItem';
 
 export default function LobbyPage() {
+    const navigate = useNavigate();
+
+    const handlePlayClick = () => {
+        navigate('/game');
+    };
+
     return (
         <div className="lobby">
             <div className="lobby__container">
@@ -10,7 +17,7 @@ export default function LobbyPage() {
 
                 <UserItem userName={'User1'} />
 
-                <button type="button" class="button lobby__button">
+                <button type="button" className="button lobby__button" onClick={handlePlayClick}>
                     PLAY
                 </button>
             </div>
