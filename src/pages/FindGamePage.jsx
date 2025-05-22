@@ -3,6 +3,7 @@ import '../assets/styles/findgame.scss';
 import UserItem from './components/user/UserItem.jsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const possibleNames = [
     'SkullSlasher',
@@ -22,6 +23,7 @@ export default function FindGamePage() {
     const [searching, setSearching] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0); // seconds
     const [finalEnemy, setFinalEnemy] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!searching) return;
@@ -97,7 +99,7 @@ export default function FindGamePage() {
     return (
         <div className="findgame">
             <div className="findgame__container">
-                <img src="logo.png" alt="Acehole" />
+                <img className='findgame__logo' src="logo.png" alt="Acehole" onClick={() => navigate('/')} />
 
                 <div className="findgame__search">
                     <UserItem userName={'UserName'} />
@@ -113,8 +115,7 @@ export default function FindGamePage() {
                     type="button"
                     className="button findgame__button"
                     onClick={handleFindGame}
-                    disabled={searching}
-                >
+                    disabled={searching}>
                     {searching ? 'Searching...' : 'Find Game'}
                 </button>
             </div>
