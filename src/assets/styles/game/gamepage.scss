@@ -1,0 +1,27 @@
+.gamepage {
+    &__aside {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content: space-between;
+        max-width: 300px;
+
+        position: relative;
+
+        &:before {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: calc(100% - 20px);
+            background: var(--bg-color-1);
+            left: 260px;
+            bottom: 10px;
+        }
+    }
+
+    &__logo {
+        max-width: 240px;
+        padding: 10px;
+        margin-left: 10px;
+    }
+}

@@ -99,7 +99,12 @@ export default function FindGamePage() {
     return (
         <div className="findgame">
             <div className="findgame__container">
-                <img className='findgame__logo' src="logo.png" alt="Acehole" onClick={() => navigate('/')} />
+                <img
+                    className="findgame__logo"
+                    src="logo.png"
+                    alt="Acehole"
+                    onClick={() => navigate('/')}
+                />
 
                 <div className="findgame__search">
                     <UserItem userName={'UserName'} />
@@ -115,7 +120,8 @@ export default function FindGamePage() {
                     type="button"
                     className="button findgame__button"
                     onClick={handleFindGame}
-                    disabled={searching}>
+                    disabled={searching}
+                >
                     {searching ? 'Searching...' : 'Find Game'}
                 </button>
             </div>

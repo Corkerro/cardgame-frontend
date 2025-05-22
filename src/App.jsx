@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './assets/styles/reset.css';
 import './assets/styles/base.scss';
-import GamePage from './pages/GamePage.jsx';
+import GamePage from './pages/GamePage/GamePage.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
 import FindGamePage from './pages/FindGamePage.jsx';
 
