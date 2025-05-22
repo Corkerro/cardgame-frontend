@@ -2,6 +2,8 @@ import React from 'react';
 import '../../assets/styles/game/gamepage.scss';
 import '../../assets/styles/game/card.scss';
 import Player from './Player.jsx';
+import Card from './Card.jsx';
+import EnemyCard from './EnemyCard.jsx';
 
 export default function GamePage({ onNavigate }) {
     const enemy = {
@@ -18,6 +20,46 @@ export default function GamePage({ onNavigate }) {
         username: 'Player',
     };
 
+    const playerCards = [
+        {
+            name: 'Card Name',
+            attac: 10,
+            defense: 8,
+            price: 10,
+            imgUrl: 'cards/card-1.png',
+        },
+        {
+            name: 'Card Name2',
+            attac: 2,
+            defense: 8,
+            price: 4,
+            imgUrl: 'cards/card-1.png',
+        },
+        {
+            name: 'Card Name3',
+            attac: 2,
+            defense: 8,
+            price: 4,
+            imgUrl: 'cards/card-1.png',
+        },
+        {
+            name: 'Card Name4',
+            attac: 2,
+            defense: 8,
+            price: 4,
+            imgUrl: 'cards/card-1.png',
+        },
+        {
+            name: 'Card Name5',
+            attac: 2,
+            defense: 8,
+            price: 4,
+            imgUrl: 'cards/card-1.png',
+        },
+    ];
+
+    const enemyCardCount = 5;
+
     return (
         <div className="gamepage">
             <aside className="gamepage__aside">
@@ -26,25 +68,16 @@ export default function GamePage({ onNavigate }) {
                 <Player player={player} />
             </aside>
             <div className="gamebox">
-                <div className="card">
-                    <ul className="card__stats">
-                        <li className="card__stat">
-                            <img src="sword.svg" alt="Attac" />
-                            <span>10</span>
-                        </li>
-                        <li className="card__stat">
-                            <img src="shield.svg" alt="Defense" />
-                            <span>8</span>
-                        </li>
-                        <li className="card__stat">
-                            <img src="money.svg" alt="Price" />
-                            <span>10</span>
-                        </li>
-                    </ul>
+                <div className="enemy-hand hand">
+                    {Array.from({ length: enemyCardCount }).map((_, index) => (
+                        <EnemyCard key={index} />
+                    ))}
+                </div>
 
-                    <img src="cards/card-1.png" alt="Card Name" className="card__img" />
-
-                    <p className="card__name">Card Name</p>
+                <div className="player-hand hand">
+                    {playerCards.map((card, index) => (
+                        <Card key={index} card={card} />
+                    ))}
                 </div>
             </div>
         </div>

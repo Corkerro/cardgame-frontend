@@ -27,3 +27,24 @@
         margin-left: 10px;
     }
 }
+
+.gamebox {
+    position: relative;
+    width: 100%;
+}
+.hand {
+    display: flex;
+    gap: 2px;
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.enemy-hand {
+    top: 5px;
+}
+
+.player-hand {
+    bottom: 5px;
+}
