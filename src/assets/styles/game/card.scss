@@ -1,0 +1,41 @@
+.card {
+    width: 150px;
+    background: var(--bg-color-2);
+    border: 1px solid var(--bg-color-3);
+
+    &__stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px;
+    }
+
+    &__stat {
+        display: flex;
+        align-items: center;
+        & span {
+            color: var(--font-color-1);
+            font-size: 18px;
+            font-weight: bold;
+            width: 18px;
+            text-align: center;
+        }
+    }
+
+    &__img {
+        width: 95%;
+        margin: 0 auto;
+    }
+
+    &__name {
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 -4px 4px 0 #26272f;
+        background: linear-gradient(180deg, #26272f 0%, #18181c 100%);
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--font-color-1);
+        padding: 0 5px 5px;
+    }
+}
