@@ -3,10 +3,11 @@
     height: 210px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     gap: 2px;
     background: var(--bg-color-2);
     border: 1px solid var(--bg-color-3);
+    border-radius: 10px;
 
     &__stats {
         display: flex;
@@ -28,7 +29,7 @@
     }
 
     &__img {
-        width: 95%;
+        width: calc(100% - 10px);
         margin: 0 auto;
         display: block;
     }
@@ -49,4 +50,13 @@
 .enemy-card {
     width: 120px;
     height: 168px;
+    justify-content: center;
+
+    & img {
+        height: calc(100% - 10px);
+        object-fit: scale-down;
+        padding: 5px;
+        border: 1px solid var(--bg-color-3);
+        border-radius: 6px;
+    }
 }
