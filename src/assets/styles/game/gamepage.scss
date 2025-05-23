@@ -1,0 +1,51 @@
+.gamepage {
+    display: flex;
+    position: relative;
+    &__aside {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content: space-between;
+        width: 300px;
+        flex-shrink: 0;
+
+        position: relative;
+
+        &:before {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: calc(100% - 20px);
+            background: var(--bg-color-1);
+            left: 260px;
+            bottom: 10px;
+        }
+    }
+
+    &__logo {
+        max-width: 240px;
+        padding: 10px;
+        margin-left: 10px;
+    }
+}
+
+.gamebox {
+    position: relative;
+    width: 100%;
+}
+.hand {
+    display: flex;
+    gap: 2px;
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.enemy-hand {
+    top: 5px;
+}
+
+.player-hand {
+    bottom: 5px;
+}

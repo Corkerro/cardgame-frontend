@@ -14,7 +14,7 @@ export default function PasswordInput({ name, placeholder, value, onChange }) {
                 value={value}
                 onChange={onChange}
             />
-            <button type="button" onClick={() => setShowPassword(prev => !prev)}>
+            <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
                 {showPassword ? '🙈' : '👁️'}
             </button>
         </div>

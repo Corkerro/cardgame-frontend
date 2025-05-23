@@ -1,4 +1,4 @@
-.lobby {
+.findgame {
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -21,6 +21,28 @@
         font-size: 48px;
         color: var(--font-color-3);
 
+        cursor: pointer;
+    }
+
+    &__search {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        margin: 40px 0;
+
+        & > p {
+            font-size: 64px;
+            font-weight: bold;
+            color: var(--font-color-3);
+        }
+    }
+
+    &__timer {
+        font-size: 24px;
+        color: var(--font-color-3);
+    }
+
+    &__logo {
         cursor: pointer;
     }
 }

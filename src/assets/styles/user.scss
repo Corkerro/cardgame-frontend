@@ -8,6 +8,19 @@
 
         &.reverse {
             flex-direction: row-reverse;
+
+            & .user {
+                &__name {
+                    text-align: right;
+                }
+            }
+        }
+        &:not(.center) {
+            .user {
+                &__name {
+                    width: 150px;
+                }
+            }
         }
     }
 
@@ -17,8 +30,23 @@
         &_placeholder {
             width: 64px;
             height: 64px;
-            border-radius: 100%;
+            border-radius: 50%;
             background: var(--font-color-3);
+        }
+
+        &_img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+        }
+
+        &_upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--bg-color-1);
+            border-radius: 4px;
+            cursor: pointer;
         }
     }
 
@@ -26,5 +54,7 @@
         color: var(--font-color-3);
         font-size: 24px;
         font-weight: bold;
+
+        text-overflow: ellipsis;
     }
 }
