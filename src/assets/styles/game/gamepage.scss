@@ -32,6 +32,17 @@
 .gamebox {
     position: relative;
     width: 100%;
+
+    &:before {
+        content: '';
+        position: absolute;
+        width: calc(100% + 40px);
+        height: 5px;
+        background: var(--bg-color-1);
+        right: 0;
+        top: calc(50% - 25px);
+        transform: translateY(-50%);
+    }
 }
 .hand {
     display: flex;
@@ -48,4 +59,48 @@
 
 .player-hand {
     bottom: 5px;
+}
+
+.game-deck {
+    display: flex;
+    gap: 40px;
+    position: absolute;
+    flex-direction: column;
+    height: calc(100vh - 400px);
+    justify-content: center;
+    align-items: center;
+    top: calc(50% - 25px);
+    width: 100%;
+    transform: translateY(-50%);
+
+    &__cards {
+        display: flex;
+        gap: 8px;
+    }
+}
+
+.game-button {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+
+    right: 15px;
+    font-size: 42px;
+    color: var(--font-color-1);
+    font-weight: bold;
+    background: var(--bg-color-1);
+    cursor: pointer;
+
+    top: calc(50% - 25px);
+    transform: translateY(-50%);
+
+    transition: background-color .3s ease;
+
+    &:hover {
+        background: var(--bg-color-1-hover);
+    }
 }

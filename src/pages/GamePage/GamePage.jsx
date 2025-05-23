@@ -74,11 +74,26 @@ export default function GamePage({ onNavigate }) {
                     ))}
                 </div>
 
+                <div className="game-deck">
+                    <div className="enemy-deck game-deck__cards">
+                        <Card card={playerCards[0]} />
+                    </div>
+                    <div className="player-deck game-deck__cards">
+                        <Card card={playerCards[0]} />
+                        <Card card={playerCards[0]} />
+                        <Card card={playerCards[0]} />
+                    </div>
+                </div>
+
                 <div className="player-hand hand">
                     {playerCards.map((card, index) => (
                         <Card key={index} card={card} />
                     ))}
                 </div>
+
+                <button className="game-button">
+                    PASS
+                </button>
             </div>
         </div>
     );
