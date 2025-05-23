@@ -91,9 +91,7 @@ export default function GamePage({ onNavigate }) {
                     ))}
                 </div>
 
-                <button className="game-button">
-                    PASS
-                </button>
+                <button className="game-button">PASS</button>
             </div>
         </div>
     );

@@ -98,7 +98,7 @@
     top: calc(50% - 25px);
     transform: translateY(-50%);
 
-    transition: background-color .3s ease;
+    transition: background-color 0.3s ease;
 
     &:hover {
         background: var(--bg-color-1-hover);
