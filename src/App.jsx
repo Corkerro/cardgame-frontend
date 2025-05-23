@@ -16,11 +16,10 @@ function App() {
             <Routes>
                 <Route path="/auth" element={<AuthPage />} />
 
-                <Route element={<RequireAuth />}>
-                    <Route path="/" element={<LobbyPage />} />
-                    <Route path="/game" element={<GamePage />} />
-                    <Route path="/find-game" element={<FindGamePage />} />
-                </Route>
+                <Route path="/" element={<LobbyPage />} />
+                <Route path="/game" element={<GamePage />} /> {/* <-- без авторизации */}
+                <Route path="/find-game" element={<FindGamePage />} />
+
 
                 {/* other routes */}
 
