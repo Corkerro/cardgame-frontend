@@ -62,21 +62,24 @@
 }
 
 .game-deck {
-    display: flex;
-    gap: 40px;
     position: absolute;
-    flex-direction: column;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
     height: calc(100vh - 400px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.enemy-deck, .player-deck {
+    display: flex;
     justify-content: center;
     align-items: center;
-    top: calc(50% - 25px);
-    width: 100%;
-    transform: translateY(-50%);
-
-    &__cards {
-        display: flex;
-        gap: 8px;
-    }
+    height: 210px; /* одинаково с .card height */
+    gap: 8px;
 }
 
 .game-button {
