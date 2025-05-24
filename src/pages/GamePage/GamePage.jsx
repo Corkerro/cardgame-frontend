@@ -8,7 +8,7 @@ import EnemyCard from './EnemyCard.jsx';
 const initialHP = 20;
 const maxHandSize = 5;
 const maxBoardSize = 5;
-const turnTime = 30;
+const turnTime = 20;
 
 const allCards = [
     { name: 'Iron Man', attac: 10, defense: 6, price: 8, imgUrl: 'cards/card-1.png' },
@@ -137,7 +137,7 @@ export default function GamePage({ onNavigate }) {
         setPlayerHand(prevHand => {
             const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
             const cardsToDraw = playerDeck.slice(0, cardsNeeded);
-            setPlayerDeck(prevDeck => prevDeck.slice(cardsNeeded)); // убираем из колоды
+            setPlayerDeck(prevDeck => prevDeck.slice(cardsNeeded));
             return [...prevHand, ...cardsToDraw];
         });
     } else {
@@ -169,7 +169,6 @@ export default function GamePage({ onNavigate }) {
         setPlayerMoney(m => m - card.price);
         setPlayerBoard(board => [...board, card]);
 
-        // Убираем сыгранную карту из руки — добор НЕ происходит сразу
         setPlayerHand(hand => {
             const newHand = [...hand];
             newHand.splice(index, 1);
@@ -185,13 +184,13 @@ export default function GamePage({ onNavigate }) {
         resolveBattle();
         drawCards('player');
         drawCards('enemy');
-        setCurrentTurn('enemy'); // enemyMove вызовется через useEffect
+        setCurrentTurn('enemy');
     } else {
         setEnemyMoney(m => m + 2);
         resolveBattle();
         drawCards('player');
         drawCards('enemy');
-        setCurrentTurn('player'); // player снова в игре
+        setCurrentTurn('player');
     }
 
     setTimer(turnTime);
@@ -284,7 +283,9 @@ export default function GamePage({ onNavigate }) {
                     {gameOver ? 'Game Over' : currentTurn === 'player' ? 'Pass Turn' : 'Enemy Turn...'}
                 </button>
 
-                <div className="timer">Timer: {timer}s</div>
+                <div className={`timer ${timer <= 10 ? 'low' : ''}`}>
+                ⏳ {timer}s
+                </div>
             </div>
         </div>
     );
