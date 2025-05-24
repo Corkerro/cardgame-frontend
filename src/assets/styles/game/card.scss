@@ -60,3 +60,41 @@
         border-radius: 6px;
     }
 }
+
+.enemy-hand-container {
+    position: relative;
+    width: 100%;
+}
+
+.enemy-deck-visual {
+    position: absolute;
+    top: 12px;      /* небольшой отступ сверху */
+    right: 12px;    /* отступ справа */
+    width: 120px;
+    height: 168px;
+    z-index: 10;
+}
+
+.enemy-deck-count {
+    position: absolute;
+    bottom: -12px;
+    right: -12px;
+    background: var(--bg-color-1);
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    line-height: 28px;
+    text-align: center;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.enemy-hand {
+    padding-right: 140px; /* Чтобы карты руки не наезжали на колоду сверху справа */
+    display: flex;
+    gap: 8px; /* Можно регулировать расстояние между картами */
+}
+
+
