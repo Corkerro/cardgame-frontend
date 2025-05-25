@@ -40,8 +40,7 @@ function getRandomCard() {
 export default function GamePage({ onNavigate }) {
     const [playerHP, setPlayerHP] = useState(initialHP);
     const [enemyHP, setEnemyHP] = useState(initialHP);
-    const [playerDeck, setPlayerDeck] = useState([]);
-    const [enemyDeck, setEnemyDeck] = useState([]);
+    const [mainDeck, setMainDeck] = useState([]);
     const [playerHand, setPlayerHand] = useState([]);
     const [enemyHand, setEnemyHand] = useState([]);
     const [playerBoard, setPlayerBoard] = useState([]);
@@ -59,18 +58,21 @@ export default function GamePage({ onNavigate }) {
     const [enemyFirstTurnStarted, setEnemyFirstTurnStarted] = useState(false);
 
     useEffect(() => {
-        const initialPlayerDeck = Array.from({ length: 15 }, getRandomCard);
-        const initialEnemyDeck = Array.from({ length: 15 }, getRandomCard);
-        setPlayerHand(initialPlayerDeck.slice(0, maxHandSize));
-        setPlayerDeck(initialPlayerDeck.slice(maxHandSize));
-        setEnemyHand(initialEnemyDeck.slice(0, maxHandSize));
-        setEnemyDeck(initialEnemyDeck.slice(maxHandSize));
+        const shuffledDeck = Array.from({ length: 30 }, getRandomCard); // 30 карт для двоих
+        const playerStart = shuffledDeck.slice(0, maxHandSize);
+        const enemyStart = shuffledDeck.slice(maxHandSize, maxHandSize * 2);
+        const remaining = shuffledDeck.slice(maxHandSize * 2);
+
+        setPlayerHand(playerStart);
+        setEnemyHand(enemyStart);
+        setMainDeck(remaining);
         setCurrentTurn(Math.random() < 0.5 ? 'player' : 'enemy');
         setPlayerHasMoved(false);
         setEnemyHasMoved(false);
         setRoundStep('');
         setEnemyFirstTurnStarted(false);
     }, []);
+
 
     useEffect(() => {
         if (gameOver) return;
@@ -118,8 +120,7 @@ export default function GamePage({ onNavigate }) {
         if (playerHasMoved && enemyHasMoved && awaitingBattle && !gameOver) {
             const battleTimeout = setTimeout(() => {
                 resolveBattle();
-                drawCards('player');
-                drawCards('enemy');
+                drawCardsForBoth();
                 setRoundStep('');
                 setCurrentTurn(prev => (prev === 'player' ? 'enemy' : 'player'));
                 setTimer(turnTime);
@@ -130,6 +131,23 @@ export default function GamePage({ onNavigate }) {
             return () => clearTimeout(battleTimeout);
         }
     }, [playerHasMoved, enemyHasMoved, awaitingBattle, gameOver]);
+
+    function drawCardsForBoth() {
+        const playerSpace = maxHandSize - playerHand.length;
+        const enemySpace = maxHandSize - enemyHand.length;
+        const totalNeeded = playerSpace + enemySpace;
+
+        const cardsToDraw = mainDeck.slice(0, totalNeeded);
+        const newDeck = mainDeck.slice(totalNeeded);
+
+        const newPlayerCards = cardsToDraw.slice(0, playerSpace);
+        const newEnemyCards = cardsToDraw.slice(playerSpace);
+
+        setPlayerHand(prev => [...prev, ...newPlayerCards]);
+        setEnemyHand(prev => [...prev, ...newEnemyCards]);
+        setMainDeck(newDeck);
+    }
+
 
     function resolveBattle() {
         const playerAttackSum = playerBoard.reduce((sum, card) => sum + card.attac, 0);
@@ -145,20 +163,6 @@ export default function GamePage({ onNavigate }) {
 
         setPlayerBoard([]);
         setEnemyBoard([]);
-    }
-
-    function drawCards(playerType) {
-        if (playerType === 'player') {
-            const needed = Math.max(0, maxHandSize - playerHand.length);
-            const toDraw = playerDeck.slice(0, needed);
-            setPlayerHand(prev => [...prev, ...toDraw]);
-            setPlayerDeck(prev => prev.slice(needed));
-        } else {
-            const needed = Math.max(0, maxHandSize - enemyHand.length);
-            const toDraw = enemyDeck.slice(0, needed);
-            setEnemyHand(prev => [...prev, ...toDraw]);
-            setEnemyDeck(prev => prev.slice(needed));
-        }
     }
 
     function playCard(index) {
@@ -227,7 +231,7 @@ export default function GamePage({ onNavigate }) {
                 <div className="enemy-hand-container">
                     <div className="enemy-deck-visual">
                         <EnemyCard />
-                        <div className="enemy-deck-count">{enemyDeck.length}</div>
+                        <div className="enemy-deck-count">{mainDeck.length}</div>
                     </div>
                     <div className="enemy-hand hand">
                         {enemyHand.map((_, i) => <EnemyCard key={i} />)}
