@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import Loader from './Loader.jsx';
+import getCookie from "./GetCookie.js";
 
 export default function RequireAuth() {
     const [loading, setLoading] = useState(true);
@@ -9,7 +10,7 @@ export default function RequireAuth() {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('jwt');
+            const token = getCookie('jwt');
             const isDevMode = import.meta.env.VITE_DEV_MODE === '1';
 
             if (isDevMode) {
@@ -26,11 +27,13 @@ export default function RequireAuth() {
             }
 
             try {
-                const baseURL = import.meta.env.VITE_API_BASE_URL;
-                await axios.get(`${baseURL}/auth/check`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setIsAuthenticated(true);
+                // const baseURL = import.meta.env.VITE_API_BASE_URL;
+                // await axios.get(`${baseURL}/auth/check`, {
+                //     headers: { Authorization: `Bearer ${token}` },
+                // });
+                if (localStorage.getItem('jwt')) {
+                    setIsAuthenticated(true);
+                }
             } catch (error) {
                 localStorage.removeItem('jwt');
                 setIsAuthenticated(false);

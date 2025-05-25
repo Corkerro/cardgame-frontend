@@ -4,6 +4,8 @@ import UserItem from './components/user/UserItem.jsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import parseJwt from "../components/ParseJwt.js";
+import getCookie from "../components/GetCookie.js";
 
 const possibleNames = [
     'SkullSlasher',
@@ -96,6 +98,8 @@ export default function FindGamePage() {
         return `${mins}:${secs}`;
     };
 
+    const username = parseJwt(getCookie('jwt')).username;
+
     return (
         <div className="findgame">
             <div className="findgame__container">
@@ -107,7 +111,7 @@ export default function FindGamePage() {
                 />
 
                 <div className="findgame__search">
-                    <UserItem userName={'UserName'} />
+                    <UserItem userName={`${username}`} />
                     <p>VS</p>
                     <UserItem userName={enemyName} otherClasses={'reverse'} />
                 </div>

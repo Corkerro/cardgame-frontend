@@ -4,12 +4,14 @@ import PasswordInput from '../../components/forms/PasswordInput';
 import FormInput from '../../components/forms/FormInput';
 import SubmitInput from '../../components/forms/SubmitInput';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData((prev) => ({
@@ -24,9 +26,12 @@ export default function LoginForm() {
         const baseURL = import.meta.env.VITE_API_BASE_URL;
 
         try {
-            const response = await axios.post(`${baseURL}/auth/login`, formData);
-            localStorage.setItem('jwt', response.data);
+            const response = await axios.post(`${baseURL}/auth/login`, formData, {
+                withCredentials: true,
+            });
+
             toast.success('Successfully authorized!');
+            navigate('/');
         } catch (error) {
             toast.error(
                 <div>

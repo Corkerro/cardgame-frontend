@@ -12,3 +12,10 @@ body {
         background: var(--bg-color-1-hover);
     }
 }
+
+.danger {
+    background: darkred;
+    &:hover {
+        background: red;
+    }
+}
