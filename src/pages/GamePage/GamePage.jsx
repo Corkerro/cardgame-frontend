@@ -11,11 +11,26 @@ const maxBoardSize = 5;
 const turnTime = 20;
 
 const allCards = [
-    { name: 'Iron Man', attac: 10, defense: 6, price: 8, imgUrl: 'cards/card-1.png' },
-    { name: 'Thanos', attac: 12, defense: 8, price: 10, imgUrl: 'cards/card-1.png' },
-    { name: 'Hulk', attac: 8, defense: 5, price: 7, imgUrl: 'cards/card-1.png' },
-    { name: 'Spider-Man', attac: 6, defense: 4, price: 6, imgUrl: 'cards/card-1.png' },
-    { name: 'Captain Marvel', attac: 9, defense: 6, price: 9, imgUrl: 'cards/card-1.png' },
+  { name: 'Ant-Man', attac: 5, defense: 3, price: 4, imgUrl: 'cards/Ant-Man.png' },
+  { name: 'Black Panther', attac: 7, defense: 6, price: 6, imgUrl: 'cards/Black Panther.png' },
+  { name: 'Black Widow', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Black Widow.png' },
+  { name: 'Captain America', attac: 8, defense: 8, price: 8, imgUrl: 'cards/Captain America.png' },
+  { name: 'Captain Marvel', attac: 9, defense: 7, price: 8, imgUrl: 'cards/Captain Marvel.png' },
+  { name: 'Deadpool', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Deadpool.png' },
+  { name: 'Doctor Strange', attac: 8, defense: 5, price: 8, imgUrl: 'cards/Doctor Strange.png' },
+  { name: 'Falcon', attac: 5, defense: 4, price: 4, imgUrl: 'cards/Falcon.png' },
+  { name: 'Groot', attac: 4, defense: 9, price: 6, imgUrl: 'cards/Groot.png' },
+  { name: 'Hulk', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Hulk.png' },
+  { name: 'Iron Man', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Iron Man.png' },
+  { name: 'Ironheart', attac: 7, defense: 6, price: 7, imgUrl: 'cards/Ironheart.png' },
+  { name: 'Loki', attac: 6, defense: 5, price: 7, imgUrl: 'cards/Loki.png' },
+  { name: 'Rocket Raccoon', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Rocket Raccoon.png' },
+  { name: 'Scarlet Witch', attac: 9, defense: 6, price: 9, imgUrl: 'cards/Scarlet Witch.png' },
+  { name: 'Shang-Chi', attac: 8, defense: 5, price: 7, imgUrl: 'cards/Shang-Chi.png' },
+  { name: 'Spider-Man', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Spider Man.png' },
+  { name: 'Star-Lord', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Star-Lord.png' },
+  { name: 'Thor', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Thor.png' },
+  { name: 'Vision', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Vision.png' }
 ];
 
 function getRandomCard() {

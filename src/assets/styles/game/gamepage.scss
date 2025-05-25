@@ -51,6 +51,7 @@
 
     left: 50%;
     transform: translateX(-50%);
+    margin-bottom: 20px;
 }
 
 .enemy-hand {
@@ -80,6 +81,12 @@
     align-items: center;
     height: 210px; /* одинаково с .card height */
     gap: 8px;
+    margin-bottom: 30px;
+    margin-top: -10px;
+}
+
+.player-deck {
+    margin-bottom: 65px;
 }
 
 .game-button {
