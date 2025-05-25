@@ -261,6 +261,10 @@ export default function GamePage({ onNavigate }) {
                     <div className="game-result-message">
                         {gameResult === 'win' ? 'You Win!' : 'You Lose!'}
                     </div>
+                    <div className="game-result-buttons">
+                        <button onClick={() => onNavigate('/')} className="game-result-button">🏠 Go to the menu</button>
+                        <button onClick={() => onNavigate('find-game')} className="game-result-button">🔍 Find a match</button>
+                    </div>
                 </div>
             )}
         </div>
