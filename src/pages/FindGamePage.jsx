@@ -4,8 +4,8 @@ import UserItem from './components/user/UserItem.jsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import parseJwt from "../components/ParseJwt.js";
-import getCookie from "../components/GetCookie.js";
+import parseJwt from '../components/ParseJwt.js';
+import getCookie from '../components/GetCookie.js';
 
 const possibleNames = [
     'SkullSlasher',

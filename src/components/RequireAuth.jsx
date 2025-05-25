@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import Loader from './Loader.jsx';
-import getCookie from "./GetCookie.js";
+import getCookie from './GetCookie.js';
 
 export default function RequireAuth() {
     const [loading, setLoading] = useState(true);
