@@ -40,176 +40,155 @@ function getRandomCard() {
 export default function GamePage({ onNavigate }) {
     const [playerHP, setPlayerHP] = useState(initialHP);
     const [enemyHP, setEnemyHP] = useState(initialHP);
-
-    // Колоды — по 15 карт
     const [playerDeck, setPlayerDeck] = useState([]);
     const [enemyDeck, setEnemyDeck] = useState([]);
-
     const [playerHand, setPlayerHand] = useState([]);
     const [enemyHand, setEnemyHand] = useState([]);
-
     const [playerBoard, setPlayerBoard] = useState([]);
     const [enemyBoard, setEnemyBoard] = useState([]);
-
     const [playerMoney, setPlayerMoney] = useState(20);
     const [enemyMoney, setEnemyMoney] = useState(20);
-
     const [currentTurn, setCurrentTurn] = useState('');
+    const [roundStep, setRoundStep] = useState('');
     const [timer, setTimer] = useState(turnTime);
     const [gameOver, setGameOver] = useState(false);
-
     const [gameResult, setGameResult] = useState(null);
+    const [awaitingBattle, setAwaitingBattle] = useState(false);
+    const [playerHasMoved, setPlayerHasMoved] = useState(false);
+    const [enemyHasMoved, setEnemyHasMoved] = useState(false);
+    const [enemyFirstTurnStarted, setEnemyFirstTurnStarted] = useState(false);
 
-    // Инициализация колод и начальных рук
     useEffect(() => {
-        // Создаём колоды по 15 случайных карт
         const initialPlayerDeck = Array.from({ length: 15 }, getRandomCard);
         const initialEnemyDeck = Array.from({ length: 15 }, getRandomCard);
-
-        // Извлекаем первые 5 карт в руку, оставшиеся в колоду
         setPlayerHand(initialPlayerDeck.slice(0, maxHandSize));
         setPlayerDeck(initialPlayerDeck.slice(maxHandSize));
-
         setEnemyHand(initialEnemyDeck.slice(0, maxHandSize));
         setEnemyDeck(initialEnemyDeck.slice(maxHandSize));
-
         setCurrentTurn(Math.random() < 0.5 ? 'player' : 'enemy');
+        setPlayerHasMoved(false);
+        setEnemyHasMoved(false);
+        setRoundStep('');
+        setEnemyFirstTurnStarted(false);
     }, []);
 
-    // Таймер хода
     useEffect(() => {
         if (gameOver) return;
-
-        const interval = setInterval(() => {
-            setTimer(t => {
-                if (t <= 1) {
-                    handlePassTurn();
-                    return turnTime;
-                }
-                return t - 1;
-            });
-        }, 1000);
-
+        setTimer(turnTime);
+        const interval = setInterval(() => setTimer(t => t - 1), 1000);
         return () => clearInterval(interval);
     }, [currentTurn, gameOver]);
 
     useEffect(() => {
-        if (gameOver) {
-            if (playerHP <= 0) {
-                setGameResult('lose');
-            } else {
-                setGameResult('win');
-            }
-        }
+        if (timer <= 0 && !gameOver) handlePassTurn();
+    }, [timer, gameOver]);
+
+    useEffect(() => {
+        if (playerHP <= 0 || enemyHP <= 0) setGameOver(true);
+    }, [playerHP, enemyHP]);
+
+    useEffect(() => {
+        if (gameOver) setGameResult(playerHP <= 0 ? 'lose' : 'win');
     }, [gameOver]);
 
-
-    // Ход врага
     useEffect(() => {
-        if (currentTurn === 'enemy' && !gameOver) {
-            setEnemyMoney(m => {
-                const newMoney = Math.min(20, m + 2);
+        if (gameOver || (!enemyFirstTurnStarted && currentTurn !== 'enemy')) return;
 
-                setTimeout(() => {
-                    enemyMove(newMoney);
+        if (currentTurn === 'enemy' && (roundStep === 'player-done' || roundStep === '')) {
+            const newMoney = Math.min(20, enemyMoney + 2);
+            setEnemyMoney(newMoney);
+
+            setTimeout(() => {
+                enemyMove(newMoney);
+                setEnemyHasMoved(true);
+
+                if (!playerHasMoved && !enemyFirstTurnStarted) {
+                    setEnemyFirstTurnStarted(true);
+                    setRoundStep('enemy-done');
                     setCurrentTurn('player');
-                    setTimer(turnTime);
-                }, 500);
-
-                return newMoney;
-            });
+                } else {
+                    setRoundStep('enemy-done');
+                    setAwaitingBattle(true);
+                    handlePassTurn(); // 👈 СРАЗУ ПЕРЕХОДИМ
+                }
+            }, 500);
         }
-    }, [currentTurn, gameOver]);
+    }, [currentTurn, roundStep, gameOver]);
 
+    useEffect(() => {
+        if (playerHasMoved && enemyHasMoved && awaitingBattle && !gameOver) {
+            const battleTimeout = setTimeout(() => {
+                resolveBattle();
+                drawCards('player');
+                drawCards('enemy');
+                setRoundStep('');
+                setCurrentTurn(prev => (prev === 'player' ? 'enemy' : 'player'));
+                setTimer(turnTime);
+                setAwaitingBattle(false);
+                setPlayerHasMoved(false);
+                setEnemyHasMoved(false);
+            }, 2000);
+            return () => clearTimeout(battleTimeout);
+        }
+    }, [playerHasMoved, enemyHasMoved, awaitingBattle, gameOver]);
 
     function resolveBattle() {
-        // Суммарные атаки и защиты
         const playerAttackSum = playerBoard.reduce((sum, card) => sum + card.attac, 0);
         const playerDefenseSum = playerBoard.reduce((sum, card) => sum + card.defense, 0);
-
         const enemyAttackSum = enemyBoard.reduce((sum, card) => sum + card.attac, 0);
         const enemyDefenseSum = enemyBoard.reduce((sum, card) => sum + card.defense, 0);
 
-        // Расчёт урона
         const damageToPlayer = Math.max(0, enemyAttackSum - playerDefenseSum);
         const damageToEnemy = Math.max(0, playerAttackSum - enemyDefenseSum);
 
-        setPlayerHP(hp => {
-            const newHP = Math.max(0, hp - damageToPlayer);
-            if (newHP === 0) setGameOver(true);
-            return newHP;
-        });
+        setPlayerHP(hp => Math.max(0, hp - damageToPlayer));
+        setEnemyHP(hp => Math.max(0, hp - damageToEnemy));
 
-        setEnemyHP(hp => {
-            const newHP = Math.max(0, hp - damageToEnemy);
-            if (newHP === 0) setGameOver(true);
-            return newHP;
-        });
-
-        // Очистка досок после боя
         setPlayerBoard([]);
         setEnemyBoard([]);
     }
 
     function drawCards(playerType) {
         if (playerType === 'player') {
-            setPlayerHand(prevHand => {
-                const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
-                const cardsToDraw = playerDeck.slice(0, cardsNeeded);
-                setPlayerDeck(prevDeck => prevDeck.slice(cardsNeeded));
-                return [...prevHand, ...cardsToDraw];
-            });
+            const needed = Math.max(0, maxHandSize - playerHand.length);
+            const toDraw = playerDeck.slice(0, needed);
+            setPlayerHand(prev => [...prev, ...toDraw]);
+            setPlayerDeck(prev => prev.slice(needed));
         } else {
-            setEnemyHand(prevHand => {
-                const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
-                const cardsToDraw = enemyDeck.slice(0, cardsNeeded);
-                setEnemyDeck(prevDeck => prevDeck.slice(cardsNeeded));
-                return [...prevHand, ...cardsToDraw];
-            });
+            const needed = Math.max(0, maxHandSize - enemyHand.length);
+            const toDraw = enemyDeck.slice(0, needed);
+            setEnemyHand(prev => [...prev, ...toDraw]);
+            setEnemyDeck(prev => prev.slice(needed));
         }
     }
 
-
-
-
     function playCard(index) {
         if (gameOver || currentTurn !== 'player') return;
-        if (playerBoard.length >= maxBoardSize) {
-            alert("No more space on the board!");
-            return;
-        }
+        if (playerBoard.length >= maxBoardSize) return alert("No more space on the board!");
 
         const card = playerHand[index];
-        if (playerMoney < card.price) {
-            alert("Not enough money to play this card!");
-            return;
-        }
+        if (playerMoney < card.price) return alert("Not enough money to play this card!");
 
         setPlayerMoney(m => m - card.price);
         setPlayerBoard(board => [...board, card]);
-
-        setPlayerHand(hand => {
-            const newHand = [...hand];
-            newHand.splice(index, 1);
-            return newHand;
-        });
+        setPlayerHand(hand => hand.filter((_, i) => i !== index));
     }
 
     function handlePassTurn() {
         if (gameOver) return;
 
         if (currentTurn === 'player') {
-            setPlayerMoney(m => m + 2);
-            resolveBattle();
-            drawCards('player');
-            drawCards('enemy');
-            setCurrentTurn('enemy');
-        } else {
-            setEnemyMoney(m => m + 2);
-            resolveBattle();
-            drawCards('player');
-            drawCards('enemy');
-            setCurrentTurn('player');
+            setPlayerMoney(m => Math.min(20, m + 2));
+            setPlayerHasMoved(true);
+            setRoundStep('player-done');
+            if (enemyHasMoved) setAwaitingBattle(true);
+            else setCurrentTurn('enemy');
+        } else if (currentTurn === 'enemy') {
+            setEnemyMoney(m => Math.min(20, m + 2));
+            setEnemyHasMoved(true);
+            setRoundStep('enemy-done');
+            if (playerHasMoved) setAwaitingBattle(true);
+            else setCurrentTurn('player');
         }
 
         setTimer(turnTime);
@@ -218,19 +197,16 @@ export default function GamePage({ onNavigate }) {
     function enemyMove(money) {
         let board = [...enemyBoard];
         let hand = [...enemyHand];
-
         const spaceLeft = maxBoardSize - board.length;
 
         for (let i = 0; i < spaceLeft; i++) {
-            const affordableCards = hand.filter(card => money >= card.price);
-            if (affordableCards.length === 0) break;
-
-            const card = affordableCards[Math.floor(Math.random() * affordableCards.length)];
-            const index = hand.findIndex(c => c === card);
-
+            const affordable = hand.filter(c => money >= c.price);
+            if (!affordable.length) break;
+            const card = affordable[Math.floor(Math.random() * affordable.length)];
+            const idx = hand.findIndex(c => c.name === card.name);
             money -= card.price;
             board.push(card);
-            hand.splice(index, 1);
+            hand.splice(idx, 1);
         }
 
         setEnemyMoney(money);
@@ -238,21 +214,8 @@ export default function GamePage({ onNavigate }) {
         setEnemyHand(hand);
     }
 
-
-
-    const player = {
-        avaUrl: '',
-        hp: playerHP,
-        money: playerMoney,
-        username: 'Player',
-    };
-
-    const enemy = {
-        avaUrl: '',
-        hp: enemyHP,
-        money: enemyMoney,
-        username: 'Enemy',
-    };
+    const player = { avaUrl: '', hp: playerHP, money: playerMoney, username: 'Player' };
+    const enemy = { avaUrl: '', hp: enemyHP, money: enemyMoney, username: 'Enemy' };
 
     return (
         <div className="gamepage">
@@ -261,52 +224,37 @@ export default function GamePage({ onNavigate }) {
                 <img src="logo.png" alt="" className="gamepage__logo" />
                 <Player player={player} />
             </aside>
-
             <div className="gamebox">
                 <div className="enemy-hand-container">
                     <div className="enemy-deck-visual">
                         <EnemyCard />
                         <div className="enemy-deck-count">{enemyDeck.length}</div>
                     </div>
-
                     <div className="enemy-hand hand">
-                        {enemyHand.map((_, index) => (
-                            <EnemyCard key={index} />
-                        ))}
+                        {enemyHand.map((_, i) => <EnemyCard key={i} />)}
                     </div>
                 </div>
-
                 <div className="game-deck">
                     <div className="enemy-deck game-deck__cards">
-                        {enemyBoard.map((card, index) => (
-                            <Card key={index} card={card} />
-                        ))}
+                        {enemyBoard.map((card, i) => <Card key={i} card={card} />)}
                     </div>
-
                     <div className="player-deck game-deck__cards">
-                        {playerBoard.map((card, index) => (
-                            <Card key={index} card={card} />
+                        {playerBoard.map((card, i) => (
+                            <Card key={i} card={card} />
                         ))}
                     </div>
                 </div>
-
                 <div className="player-hand hand">
-                    {playerHand.map((card, index) => (
-                        <div key={index} onClick={() => playCard(index)}>
+                    {playerHand.map((card, i) => (
+                        <div key={i} onClick={() => playCard(i)}>
                             <Card card={card} />
                         </div>
                     ))}
                 </div>
-
                 <button className="game-button" onClick={handlePassTurn} disabled={gameOver}>
                     {gameOver ? 'Game Over' : currentTurn === 'player' ? 'Pass Turn' : 'Enemy Turn...'}
                 </button>
-
-                <div className={`timer ${timer <= 10 ? 'low' : ''}`}>
-                    ⏳ {timer}s
-                </div>
-
-
+                <div className={`timer ${timer <= 10 ? 'low' : ''}`}>⏳ {timer}s</div>
             </div>
             {gameResult && (
                 <div className="game-result-overlay">
@@ -315,8 +263,6 @@ export default function GamePage({ onNavigate }) {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 }
