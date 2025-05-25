@@ -4,6 +4,9 @@ import '../../assets/styles/game/card.scss';
 import Player from './Player.jsx';
 import Card from './Card.jsx';
 import EnemyCard from './EnemyCard.jsx';
+import parseJwt from "../../components/ParseJwt.js";
+import getCookie from "../../components/GetCookie.js";
+import {useLocation} from "react-router-dom";
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -23,6 +26,8 @@ function getRandomCard() {
 }
 
 export default function GamePage({ onNavigate }) {
+    const location = useLocation();
+
     const [playerHP, setPlayerHP] = useState(initialHP);
     const [enemyHP, setEnemyHP] = useState(initialHP);
 
@@ -216,17 +221,15 @@ export default function GamePage({ onNavigate }) {
     }
 
     const player = {
-        avaUrl: '',
         hp: playerHP,
         money: playerMoney,
-        username: 'Player',
+        username: parseJwt(getCookie('jwt')).username,
     };
 
     const enemy = {
-        avaUrl: '',
         hp: enemyHP,
         money: enemyMoney,
-        username: 'Enemy',
+        username: location.state?.opponentName || 'Unknown',
     };
 
     return (

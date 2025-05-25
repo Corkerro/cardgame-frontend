@@ -31,11 +31,10 @@ export default function RequireAuth() {
                 // await axios.get(`${baseURL}/auth/check`, {
                 //     headers: { Authorization: `Bearer ${token}` },
                 // });
-                if (localStorage.getItem('jwt')) {
+                if (token) {
                     setIsAuthenticated(true);
                 }
             } catch (error) {
-                localStorage.removeItem('jwt');
                 setIsAuthenticated(false);
             } finally {
                 setLoading(false);

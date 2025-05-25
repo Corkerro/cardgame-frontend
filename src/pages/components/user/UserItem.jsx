@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserAvatar from './UserAvatar';
 import '../../../assets/styles/user.scss';
 
 export default function UserItem({ initialAvatarUrl, userName, otherClasses, editable = false }) {
     const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+
+    useEffect(() => {
+        setAvatarUrl(initialAvatarUrl);
+    }, [initialAvatarUrl]);
 
     return (
         <div className={`user__wrapper ${otherClasses}`}>

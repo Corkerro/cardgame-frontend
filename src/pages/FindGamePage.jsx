@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../assets/styles/findgame.scss';
 import UserItem from './components/user/UserItem.jsx';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import parseJwt from '../components/ParseJwt.js';
 import getCookie from '../components/GetCookie.js';
+import { useSocket } from '../components/SocketContext.jsx';
 
 const possibleNames = [
     'SkullSlasher',
@@ -26,14 +25,18 @@ export default function FindGamePage() {
     const [elapsedTime, setElapsedTime] = useState(0); // seconds
     const [finalEnemy, setFinalEnemy] = useState(null);
     const navigate = useNavigate();
+    const baseURL = import.meta.env.VITE_API_BASE_URL;
+    const socket = useSocket();
+    const startTimeRef = useRef(null);
+    const [enemyAvatarUrl, setEnemyAvatarUrl] = useState(null);
 
     useEffect(() => {
-        if (!searching) return;
+        if (!searching || !socket || !socket.connected) return;
 
-        const startTime = Date.now();
+        startTimeRef.current = Date.now();
 
         const timer = setInterval(() => {
-            const secondsElapsed = Math.floor((Date.now() - startTime) / 1000);
+            const secondsElapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
             setElapsedTime(secondsElapsed);
         }, 1000);
 
@@ -42,54 +45,47 @@ export default function FindGamePage() {
             setEnemyName(randomName);
         }, 100);
 
-        const findGame = async () => {
-            try {
-                const baseURL = import.meta.env.VITE_API_BASE_URL;
-                const token = localStorage.getItem('jwt');
-                const response = await axios.get(`${baseURL}/game/find`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        socket.emit('joinQueue');
 
-                // Enemy find
-                setFinalEnemy(response.data.enemyName || 'EnemyPlayer');
-                setSearching(false);
-                clearInterval(nameInterval);
-                clearInterval(timer);
-                setEnemyName(response.data.enemyName || 'EnemyPlayer');
-            } catch (error) {
-                clearInterval(nameInterval);
-                clearInterval(timer);
-                setSearching(false);
-                setEnemyName('Error');
-                toast.error(
-                    <div>
-                        <div style={{ fontWeight: 'bold' }}>Game search failed!</div>
-                        <div style={{ fontSize: '0.9rem' }}>
-                            {typeof error.response?.data === 'string'
-                                ? error.response.data.replace(/^"|"$/g, '')
-                                : error.response?.data?.message || error.message}
-                        </div>
-                    </div>,
-                );
-                console.error('Game search failed:', error);
-            }
+        const handleMatchFound = (data) => {
+            console.log('Match found data from server:', data);
+            setFinalEnemy(data.opponentName || 'EnemyPlayer');
+            setSearching(false);
+            clearInterval(nameInterval);
+            clearInterval(timer);
+            setEnemyName(data.opponentName || 'EnemyPlayer');
+            setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
+
+            setTimeout(() => {
+                navigate('/game', { state: { opponentName: data.opponentName || 'EnemyPlayer' } });
+            }, 1000);
         };
 
-        findGame();
+        socket.on('matchFound', handleMatchFound);
 
         return () => {
+            socket.off('matchFound', handleMatchFound);
+            socket.emit('leaveQueue');
             clearInterval(timer);
             clearInterval(nameInterval);
         };
-    }, [searching]);
+    }, [searching, socket]);
 
     const handleFindGame = () => {
-        setSearching(true);
-        setElapsedTime(0);
-        setFinalEnemy(null);
-        setEnemyName('...');
+        if (searching) {
+            if (socket && socket.connected) {
+                socket.emit('leaveQueue');
+            }
+            setSearching(false);
+            setElapsedTime(0);
+            setFinalEnemy(null);
+            setEnemyName('...');
+        } else {
+            setSearching(true);
+            setElapsedTime(0);
+            setFinalEnemy(null);
+            setEnemyName('...');
+        }
     };
 
     const formatTime = (totalSeconds) => {
@@ -111,22 +107,24 @@ export default function FindGamePage() {
                 />
 
                 <div className="findgame__search">
-                    <UserItem userName={`${username}`} />
+                    <UserItem
+                        userName={`${username}`}
+                        initialAvatarUrl={`${baseURL}/avatars/${username}_ava.jpg`}
+                    />
                     <p>VS</p>
-                    <UserItem userName={enemyName} otherClasses={'reverse'} />
+                    <UserItem
+                        userName={enemyName}
+                        otherClasses={'reverse'}
+                        initialAvatarUrl={enemyAvatarUrl}
+                    />
                 </div>
 
                 <p className="findgame__timer">
                     {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '00:00'}
                 </p>
 
-                <button
-                    type="button"
-                    className="button findgame__button"
-                    onClick={handleFindGame}
-                    disabled={searching}
-                >
-                    {searching ? 'Searching...' : 'Find Game'}
+                <button type="button" className="button findgame__button" onClick={handleFindGame}>
+                    {searching ? 'Cancel' : 'Find Game'}
                 </button>
             </div>
         </div>
