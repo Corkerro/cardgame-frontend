@@ -4,9 +4,9 @@ import '../../assets/styles/game/card.scss';
 import Player from './Player.jsx';
 import Card from './Card.jsx';
 import EnemyCard from './EnemyCard.jsx';
-import parseJwt from "../../components/ParseJwt.js";
-import getCookie from "../../components/GetCookie.js";
-import {useLocation} from "react-router-dom";
+import parseJwt from '../../components/ParseJwt.js';
+import getCookie from '../../components/GetCookie.js';
+import { useLocation } from 'react-router-dom';
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -17,7 +17,13 @@ const allCards = [
     { name: 'Ant-Man', attac: 5, defense: 3, price: 4, imgUrl: 'cards/Ant-Man.png' },
     { name: 'Black Panther', attac: 7, defense: 6, price: 6, imgUrl: 'cards/Black Panther.png' },
     { name: 'Black Widow', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Black Widow.png' },
-    { name: 'Captain America', attac: 8, defense: 8, price: 8, imgUrl: 'cards/Captain America.png' },
+    {
+        name: 'Captain America',
+        attac: 8,
+        defense: 8,
+        price: 8,
+        imgUrl: 'cards/Captain America.png',
+    },
     { name: 'Captain Marvel', attac: 9, defense: 7, price: 8, imgUrl: 'cards/Captain Marvel.png' },
     { name: 'Deadpool', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Deadpool.png' },
     { name: 'Doctor Strange', attac: 8, defense: 5, price: 8, imgUrl: 'cards/Doctor Strange.png' },
@@ -33,7 +39,7 @@ const allCards = [
     { name: 'Spider-Man', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Spider Man.png' },
     { name: 'Star-Lord', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Star-Lord.png' },
     { name: 'Thor', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Thor.png' },
-    { name: 'Vision', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Vision.png' }
+    { name: 'Vision', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Vision.png' },
 ];
 
 function getRandomCard() {
@@ -78,11 +84,10 @@ export default function GamePage({ onNavigate }) {
         setEnemyFirstTurnStarted(false);
     }, []);
 
-
     useEffect(() => {
         if (gameOver) return;
         setTimer(turnTime);
-        const interval = setInterval(() => setTimer(t => t - 1), 1000);
+        const interval = setInterval(() => setTimer((t) => t - 1), 1000);
         return () => clearInterval(interval);
     }, [currentTurn, gameOver]);
 
@@ -105,7 +110,7 @@ export default function GamePage({ onNavigate }) {
             // Убрал setEnemyMoney(newMoney);
 
             setTimeout(() => {
-                enemyMove(enemyMoney);  // передаем текущие деньги без изменений
+                enemyMove(enemyMoney); // передаем текущие деньги без изменений
                 setEnemyHasMoved(true);
 
                 if (!playerHasMoved && !enemyFirstTurnStarted) {
@@ -127,7 +132,7 @@ export default function GamePage({ onNavigate }) {
                 resolveBattle();
                 drawCardsForBoth();
                 setRoundStep('');
-                setCurrentTurn(prev => (prev === 'player' ? 'enemy' : 'player'));
+                setCurrentTurn((prev) => (prev === 'player' ? 'enemy' : 'player'));
                 setTimer(turnTime);
                 setAwaitingBattle(false);
                 setPlayerHasMoved(false);
@@ -148,8 +153,8 @@ export default function GamePage({ onNavigate }) {
         const newPlayerCards = cardsToDraw.slice(0, playerSpace);
         const newEnemyCards = cardsToDraw.slice(playerSpace);
 
-        setPlayerHand(prev => [...prev, ...newPlayerCards]);
-        setEnemyHand(prev => [...prev, ...newEnemyCards]);
+        setPlayerHand((prev) => [...prev, ...newPlayerCards]);
+        setEnemyHand((prev) => [...prev, ...newEnemyCards]);
         setMainDeck(newDeck);
     }
 
@@ -162,8 +167,8 @@ export default function GamePage({ onNavigate }) {
         const damageToPlayer = Math.max(0, enemyAttackSum - playerDefenseSum);
         const damageToEnemy = Math.max(0, playerAttackSum - enemyDefenseSum);
 
-        setPlayerHP(hp => Math.max(0, hp - damageToPlayer));
-        setEnemyHP(hp => Math.max(0, hp - damageToEnemy));
+        setPlayerHP((hp) => Math.max(0, hp - damageToPlayer));
+        setEnemyHP((hp) => Math.max(0, hp - damageToEnemy));
 
         setPlayerBoard([]);
         setEnemyBoard([]);
@@ -171,27 +176,27 @@ export default function GamePage({ onNavigate }) {
 
     function playCard(index) {
         if (gameOver || currentTurn !== 'player') return;
-        if (playerBoard.length >= maxBoardSize) return alert("No more space on the board!");
+        if (playerBoard.length >= maxBoardSize) return alert('No more space on the board!');
 
         const card = playerHand[index];
-        if (playerMoney < card.price) return alert("Not enough money to play this card!");
+        if (playerMoney < card.price) return alert('Not enough money to play this card!');
 
-        setPlayerMoney(m => m - card.price);
-        setPlayerBoard(board => [...board, card]);
-        setPlayerHand(hand => hand.filter((_, i) => i !== index));
+        setPlayerMoney((m) => m - card.price);
+        setPlayerBoard((board) => [...board, card]);
+        setPlayerHand((hand) => hand.filter((_, i) => i !== index));
     }
 
     function handlePassTurn() {
         if (gameOver) return;
 
         if (currentTurn === 'player') {
-            setPlayerMoney(m => Math.min(20, m + 2));
+            setPlayerMoney((m) => Math.min(20, m + 2));
             setPlayerHasMoved(true);
             setRoundStep('player-done');
             if (enemyHasMoved) setAwaitingBattle(true);
             else setCurrentTurn('enemy');
         } else if (currentTurn === 'enemy') {
-            setEnemyMoney(m => Math.min(20, m + 2));
+            setEnemyMoney((m) => Math.min(20, m + 2));
             setEnemyHasMoved(true);
             setRoundStep('enemy-done');
             if (playerHasMoved) setAwaitingBattle(true);
@@ -207,10 +212,10 @@ export default function GamePage({ onNavigate }) {
         const spaceLeft = maxBoardSize - board.length;
 
         for (let i = 0; i < spaceLeft; i++) {
-            const affordable = hand.filter(c => money >= c.price);
+            const affordable = hand.filter((c) => money >= c.price);
             if (!affordable.length) break;
             const card = affordable[Math.floor(Math.random() * affordable.length)];
-            const idx = hand.findIndex(c => c.name === card.name);
+            const idx = hand.findIndex((c) => c.name === card.name);
             money -= card.price;
             board.push(card);
             hand.splice(idx, 1);
@@ -247,12 +252,16 @@ export default function GamePage({ onNavigate }) {
                         <div className="enemy-deck-count">{mainDeck.length}</div>
                     </div>
                     <div className="enemy-hand hand">
-                        {enemyHand.map((_, i) => <EnemyCard key={i} />)}
+                        {enemyHand.map((_, i) => (
+                            <EnemyCard key={i} />
+                        ))}
                     </div>
                 </div>
                 <div className="game-deck">
                     <div className="enemy-deck game-deck__cards">
-                        {enemyBoard.map((card, i) => <Card key={i} card={card} />)}
+                        {enemyBoard.map((card, i) => (
+                            <Card key={i} card={card} />
+                        ))}
                     </div>
                     <div className="player-deck game-deck__cards">
                         {playerBoard.map((card, i) => (
@@ -282,8 +291,15 @@ export default function GamePage({ onNavigate }) {
                         {gameResult === 'win' ? 'You Win!' : 'You Lose!'}
                     </div>
                     <div className="game-result-buttons">
-                        <button onClick={() => onNavigate('/')} className="game-result-button">🏠 Go to the menu</button>
-                        <button onClick={() => onNavigate('find-game')} className="game-result-button">🔍 Find a match</button>
+                        <button onClick={() => onNavigate('/')} className="game-result-button">
+                            🏠 Go to the menu
+                        </button>
+                        <button
+                            onClick={() => onNavigate('find-game')}
+                            className="game-result-button"
+                        >
+                            🔍 Find a match
+                        </button>
                     </div>
                 </div>
             )}
