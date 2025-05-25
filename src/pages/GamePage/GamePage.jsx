@@ -11,26 +11,26 @@ const maxBoardSize = 5;
 const turnTime = 20;
 
 const allCards = [
-  { name: 'Ant-Man', attac: 5, defense: 3, price: 4, imgUrl: 'cards/Ant-Man.png' },
-  { name: 'Black Panther', attac: 7, defense: 6, price: 6, imgUrl: 'cards/Black Panther.png' },
-  { name: 'Black Widow', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Black Widow.png' },
-  { name: 'Captain America', attac: 8, defense: 8, price: 8, imgUrl: 'cards/Captain America.png' },
-  { name: 'Captain Marvel', attac: 9, defense: 7, price: 8, imgUrl: 'cards/Captain Marvel.png' },
-  { name: 'Deadpool', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Deadpool.png' },
-  { name: 'Doctor Strange', attac: 8, defense: 5, price: 8, imgUrl: 'cards/Doctor Strange.png' },
-  { name: 'Falcon', attac: 5, defense: 4, price: 4, imgUrl: 'cards/Falcon.png' },
-  { name: 'Groot', attac: 4, defense: 9, price: 6, imgUrl: 'cards/Groot.png' },
-  { name: 'Hulk', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Hulk.png' },
-  { name: 'Iron Man', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Iron Man.png' },
-  { name: 'Ironheart', attac: 7, defense: 6, price: 7, imgUrl: 'cards/Ironheart.png' },
-  { name: 'Loki', attac: 6, defense: 5, price: 7, imgUrl: 'cards/Loki.png' },
-  { name: 'Rocket Raccoon', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Rocket Raccoon.png' },
-  { name: 'Scarlet Witch', attac: 9, defense: 6, price: 9, imgUrl: 'cards/Scarlet Witch.png' },
-  { name: 'Shang-Chi', attac: 8, defense: 5, price: 7, imgUrl: 'cards/Shang-Chi.png' },
-  { name: 'Spider-Man', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Spider Man.png' },
-  { name: 'Star-Lord', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Star-Lord.png' },
-  { name: 'Thor', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Thor.png' },
-  { name: 'Vision', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Vision.png' }
+    { name: 'Ant-Man', attac: 5, defense: 3, price: 4, imgUrl: 'cards/Ant-Man.png' },
+    { name: 'Black Panther', attac: 7, defense: 6, price: 6, imgUrl: 'cards/Black Panther.png' },
+    { name: 'Black Widow', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Black Widow.png' },
+    { name: 'Captain America', attac: 8, defense: 8, price: 8, imgUrl: 'cards/Captain America.png' },
+    { name: 'Captain Marvel', attac: 9, defense: 7, price: 8, imgUrl: 'cards/Captain Marvel.png' },
+    { name: 'Deadpool', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Deadpool.png' },
+    { name: 'Doctor Strange', attac: 8, defense: 5, price: 8, imgUrl: 'cards/Doctor Strange.png' },
+    { name: 'Falcon', attac: 5, defense: 4, price: 4, imgUrl: 'cards/Falcon.png' },
+    { name: 'Groot', attac: 4, defense: 9, price: 6, imgUrl: 'cards/Groot.png' },
+    { name: 'Hulk', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Hulk.png' },
+    { name: 'Iron Man', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Iron Man.png' },
+    { name: 'Ironheart', attac: 7, defense: 6, price: 7, imgUrl: 'cards/Ironheart.png' },
+    { name: 'Loki', attac: 6, defense: 5, price: 7, imgUrl: 'cards/Loki.png' },
+    { name: 'Rocket Raccoon', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Rocket Raccoon.png' },
+    { name: 'Scarlet Witch', attac: 9, defense: 6, price: 9, imgUrl: 'cards/Scarlet Witch.png' },
+    { name: 'Shang-Chi', attac: 8, defense: 5, price: 7, imgUrl: 'cards/Shang-Chi.png' },
+    { name: 'Spider-Man', attac: 7, defense: 5, price: 6, imgUrl: 'cards/Spider Man.png' },
+    { name: 'Star-Lord', attac: 6, defense: 4, price: 5, imgUrl: 'cards/Star-Lord.png' },
+    { name: 'Thor', attac: 10, defense: 6, price: 9, imgUrl: 'cards/Thor.png' },
+    { name: 'Vision', attac: 8, defense: 7, price: 8, imgUrl: 'cards/Vision.png' }
 ];
 
 function getRandomCard() {
@@ -57,6 +57,8 @@ export default function GamePage({ onNavigate }) {
     const [currentTurn, setCurrentTurn] = useState('');
     const [timer, setTimer] = useState(turnTime);
     const [gameOver, setGameOver] = useState(false);
+
+    const [gameResult, setGameResult] = useState(null);
 
     // Инициализация колод и начальных рук
     useEffect(() => {
@@ -91,31 +93,33 @@ export default function GamePage({ onNavigate }) {
         return () => clearInterval(interval);
     }, [currentTurn, gameOver]);
 
-    // Окончание игры
     useEffect(() => {
         if (gameOver) {
-            setTimeout(() => {
-                alert(playerHP <= 0 ? 'You Lose!' : 'You Win!');
-            }, 100);
+            if (playerHP <= 0) {
+                setGameResult('lose');
+            } else {
+                setGameResult('win');
+            }
         }
     }, [gameOver]);
 
+
     // Ход врага
     useEffect(() => {
-    if (currentTurn === 'enemy' && !gameOver) {
-        setEnemyMoney(m => {
-            const newMoney = Math.min(20, m + 2);
+        if (currentTurn === 'enemy' && !gameOver) {
+            setEnemyMoney(m => {
+                const newMoney = Math.min(20, m + 2);
 
-            setTimeout(() => {
-                enemyMove(newMoney);
-                setCurrentTurn('player');
-                setTimer(turnTime);
-            }, 500);
+                setTimeout(() => {
+                    enemyMove(newMoney);
+                    setCurrentTurn('player');
+                    setTimer(turnTime);
+                }, 500);
 
-            return newMoney;
-        });
-    }
-}, [currentTurn, gameOver]);
+                return newMoney;
+            });
+        }
+    }, [currentTurn, gameOver]);
 
 
     function resolveBattle() {
@@ -148,22 +152,22 @@ export default function GamePage({ onNavigate }) {
     }
 
     function drawCards(playerType) {
-    if (playerType === 'player') {
-        setPlayerHand(prevHand => {
-            const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
-            const cardsToDraw = playerDeck.slice(0, cardsNeeded);
-            setPlayerDeck(prevDeck => prevDeck.slice(cardsNeeded));
-            return [...prevHand, ...cardsToDraw];
-        });
-    } else {
-        setEnemyHand(prevHand => {
-            const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
-            const cardsToDraw = enemyDeck.slice(0, cardsNeeded);
-            setEnemyDeck(prevDeck => prevDeck.slice(cardsNeeded));
-            return [...prevHand, ...cardsToDraw];
-        });
+        if (playerType === 'player') {
+            setPlayerHand(prevHand => {
+                const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
+                const cardsToDraw = playerDeck.slice(0, cardsNeeded);
+                setPlayerDeck(prevDeck => prevDeck.slice(cardsNeeded));
+                return [...prevHand, ...cardsToDraw];
+            });
+        } else {
+            setEnemyHand(prevHand => {
+                const cardsNeeded = Math.max(0, maxHandSize - prevHand.length);
+                const cardsToDraw = enemyDeck.slice(0, cardsNeeded);
+                setEnemyDeck(prevDeck => prevDeck.slice(cardsNeeded));
+                return [...prevHand, ...cardsToDraw];
+            });
+        }
     }
-}
 
 
 
@@ -192,47 +196,47 @@ export default function GamePage({ onNavigate }) {
     }
 
     function handlePassTurn() {
-    if (gameOver) return;
+        if (gameOver) return;
 
-    if (currentTurn === 'player') {
-        setPlayerMoney(m => m + 2);
-        resolveBattle();
-        drawCards('player');
-        drawCards('enemy');
-        setCurrentTurn('enemy');
-    } else {
-        setEnemyMoney(m => m + 2);
-        resolveBattle();
-        drawCards('player');
-        drawCards('enemy');
-        setCurrentTurn('player');
-    }
+        if (currentTurn === 'player') {
+            setPlayerMoney(m => m + 2);
+            resolveBattle();
+            drawCards('player');
+            drawCards('enemy');
+            setCurrentTurn('enemy');
+        } else {
+            setEnemyMoney(m => m + 2);
+            resolveBattle();
+            drawCards('player');
+            drawCards('enemy');
+            setCurrentTurn('player');
+        }
 
-    setTimer(turnTime);
+        setTimer(turnTime);
     }
 
     function enemyMove(money) {
-    let board = [...enemyBoard];
-    let hand = [...enemyHand];
+        let board = [...enemyBoard];
+        let hand = [...enemyHand];
 
-    const spaceLeft = maxBoardSize - board.length;
+        const spaceLeft = maxBoardSize - board.length;
 
-    for (let i = 0; i < spaceLeft; i++) {
-        const affordableCards = hand.filter(card => money >= card.price);
-        if (affordableCards.length === 0) break;
+        for (let i = 0; i < spaceLeft; i++) {
+            const affordableCards = hand.filter(card => money >= card.price);
+            if (affordableCards.length === 0) break;
 
-        const card = affordableCards[Math.floor(Math.random() * affordableCards.length)];
-        const index = hand.findIndex(c => c === card);
+            const card = affordableCards[Math.floor(Math.random() * affordableCards.length)];
+            const index = hand.findIndex(c => c === card);
 
-        money -= card.price;
-        board.push(card);
-        hand.splice(index, 1);
+            money -= card.price;
+            board.push(card);
+            hand.splice(index, 1);
+        }
+
+        setEnemyMoney(money);
+        setEnemyBoard(board);
+        setEnemyHand(hand);
     }
-
-    setEnemyMoney(money);
-    setEnemyBoard(board);
-    setEnemyHand(hand);
-}
 
 
 
@@ -299,9 +303,20 @@ export default function GamePage({ onNavigate }) {
                 </button>
 
                 <div className={`timer ${timer <= 10 ? 'low' : ''}`}>
-                ⏳ {timer}s
+                    ⏳ {timer}s
                 </div>
+
+
             </div>
+            {gameResult && (
+                <div className="game-result-overlay">
+                    <div className="game-result-message">
+                        {gameResult === 'win' ? 'You Win!' : 'You Lose!'}
+                    </div>
+                </div>
+            )}
+
+
         </div>
     );
 }
