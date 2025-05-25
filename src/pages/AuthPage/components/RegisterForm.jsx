@@ -4,6 +4,7 @@ import axios from 'axios';
 import PasswordInput from '../../components/forms/PasswordInput';
 import FormInput from '../../components/forms/FormInput';
 import SubmitInput from '../../components/forms/SubmitInput';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function RegisterForm() {
         password: '',
         passwordConfirm: '',
     });
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData((prev) => ({
@@ -30,13 +32,19 @@ export default function RegisterForm() {
         const baseURL = import.meta.env.VITE_API_BASE_URL;
 
         try {
-            const response = await axios.post(`${baseURL}/auth/register`, {
-                username: formData.username,
-                password: formData.password,
-            });
+            const response = await axios.post(
+                `${baseURL}/auth/register`,
+                {
+                    username: formData.username,
+                    password: formData.password,
+                },
+                {
+                    withCredentials: true,
+                },
+            );
 
-            localStorage.setItem('jwt', response.data);
             toast.success('Successfully registered!');
+            navigate('/');
         } catch (error) {
             toast.error(
                 <div>

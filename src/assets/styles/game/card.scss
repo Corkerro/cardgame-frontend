@@ -111,32 +111,37 @@
 }
 
 .timer {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  background-color: var(--bg-color-1);
-  color: #fff;
-  padding: 10px 20px;
-  border: 2px solid #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 10px #000;
-  transition: background-color 0.3s, color 0.3s;
-  z-index: 10;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: var(--bg-color-1);
+    color: #fff;
+    padding: 10px 20px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #000;
+    transition:
+        background-color 0.3s,
+        color 0.3s;
+    z-index: 10;
 }
 
 .timer.low {
-  background-color: #ff3b3b;
-  color: #fff;
-  animation: pulse 1s infinite;
+    background-color: #ff3b3b;
+    color: #fff;
+    animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
-
-
-

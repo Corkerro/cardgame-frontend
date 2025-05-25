@@ -4,6 +4,9 @@ import '../../assets/styles/game/card.scss';
 import Player from './Player.jsx';
 import Card from './Card.jsx';
 import EnemyCard from './EnemyCard.jsx';
+import parseJwt from "../../components/ParseJwt.js";
+import getCookie from "../../components/GetCookie.js";
+import {useLocation} from "react-router-dom";
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -38,6 +41,8 @@ function getRandomCard() {
 }
 
 export default function GamePage({ onNavigate }) {
+    const location = useLocation();
+
     const [playerHP, setPlayerHP] = useState(initialHP);
     const [enemyHP, setEnemyHP] = useState(initialHP);
     const [mainDeck, setMainDeck] = useState([]);
@@ -148,7 +153,6 @@ export default function GamePage({ onNavigate }) {
         setMainDeck(newDeck);
     }
 
-
     function resolveBattle() {
         const playerAttackSum = playerBoard.reduce((sum, card) => sum + card.attac, 0);
         const playerDefenseSum = playerBoard.reduce((sum, card) => sum + card.defense, 0);
@@ -217,8 +221,17 @@ export default function GamePage({ onNavigate }) {
         setEnemyHand(hand);
     }
 
-    const player = { avaUrl: '', hp: playerHP, money: playerMoney, username: 'Player' };
-    const enemy = { avaUrl: '', hp: enemyHP, money: enemyMoney, username: 'Enemy' };
+    const player = {
+        hp: playerHP,
+        money: playerMoney,
+        username: parseJwt(getCookie('jwt')).username,
+    };
+
+    const enemy = {
+        hp: enemyHP,
+        money: enemyMoney,
+        username: location.state?.opponentName || 'Unknown',
+    };
 
     return (
         <div className="gamepage">
@@ -255,7 +268,11 @@ export default function GamePage({ onNavigate }) {
                     ))}
                 </div>
                 <button className="game-button" onClick={handlePassTurn} disabled={gameOver}>
-                    {gameOver ? 'Game Over' : currentTurn === 'player' ? 'Pass Turn' : 'Enemy Turn...'}
+                    {gameOver
+                        ? 'Game Over'
+                        : currentTurn === 'player'
+                          ? 'Pass Turn'
+                          : 'Enemy Turn...'}
                 </button>
                 <div className={`timer ${timer <= 10 ? 'low' : ''}`}>⏳ {timer}s</div>
             </div>

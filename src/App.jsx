@@ -9,35 +9,39 @@ import './assets/styles/base.scss';
 import GamePage from './pages/GamePage/GamePage.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
 import FindGamePage from './pages/FindGamePage.jsx';
+import { SocketProvider } from './components/SocketContext.jsx';
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/auth" element={<AuthPage />} />
+        <SocketProvider>
+            <Router>
+                <Routes>
+                    <Route path="/auth" element={<AuthPage />} />
 
-                <Route path="/" element={<LobbyPage />} />
-                <Route path="/game" element={<GamePage />} /> {/* <-- без авторизации */}
-                <Route path="/find-game" element={<FindGamePage />} />
+                    <Route element={<RequireAuth />}>
+                        <Route path="/" element={<LobbyPage />} />
+                        <Route path="/game" element={<GamePage />} />
+                        <Route path="/find-game" element={<FindGamePage />} />
+                    </Route>
 
+                    {/* other routes */}
 
-                {/* other routes */}
-
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <ToastContainer
-                position="bottom-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
-        </Router>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="colored"
+                />
+            </Router>
+        </SocketProvider>
     );
 }
 
