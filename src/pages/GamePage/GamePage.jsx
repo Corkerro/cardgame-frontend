@@ -95,11 +95,10 @@ export default function GamePage({ onNavigate }) {
         if (gameOver || (!enemyFirstTurnStarted && currentTurn !== 'enemy')) return;
 
         if (currentTurn === 'enemy' && (roundStep === 'player-done' || roundStep === '')) {
-            const newMoney = Math.min(20, enemyMoney + 2);
-            setEnemyMoney(newMoney);
+            // Убрал setEnemyMoney(newMoney);
 
             setTimeout(() => {
-                enemyMove(newMoney);
+                enemyMove(enemyMoney);  // передаем текущие деньги без изменений
                 setEnemyHasMoved(true);
 
                 if (!playerHasMoved && !enemyFirstTurnStarted) {
@@ -109,7 +108,7 @@ export default function GamePage({ onNavigate }) {
                 } else {
                     setRoundStep('enemy-done');
                     setAwaitingBattle(true);
-                    handlePassTurn(); // 👈 СРАЗУ ПЕРЕХОДИМ
+                    handlePassTurn();
                 }
             }, 500);
         }
