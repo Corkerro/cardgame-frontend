@@ -6,7 +6,7 @@ import Card from './Card.jsx';
 import EnemyCard from './EnemyCard.jsx';
 import parseJwt from '../../components/ParseJwt.js';
 import getCookie from '../../components/GetCookie.js';
-import { useLocation } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -48,6 +48,7 @@ function getRandomCard() {
 
 export default function GamePage({ onNavigate }) {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const [playerHP, setPlayerHP] = useState(initialHP);
     const [enemyHP, setEnemyHP] = useState(initialHP);
@@ -107,10 +108,8 @@ export default function GamePage({ onNavigate }) {
         if (gameOver || (!enemyFirstTurnStarted && currentTurn !== 'enemy')) return;
 
         if (currentTurn === 'enemy' && (roundStep === 'player-done' || roundStep === '')) {
-            // Убрал setEnemyMoney(newMoney);
-
             setTimeout(() => {
-                enemyMove(enemyMoney); // передаем текущие деньги без изменений
+                enemyMove(enemyMoney);
                 setEnemyHasMoved(true);
 
                 if (!playerHasMoved && !enemyFirstTurnStarted) {
@@ -291,11 +290,11 @@ export default function GamePage({ onNavigate }) {
                         {gameResult === 'win' ? 'You Win!' : 'You Lose!'}
                     </div>
                     <div className="game-result-buttons">
-                        <button onClick={() => onNavigate('/')} className="game-result-button">
+                        <button onClick={() => navigate('/')} className="game-result-button">
                             🏠 Go to the menu
                         </button>
                         <button
-                            onClick={() => onNavigate('find-game')}
+                            onClick={() => navigate('/find-game')}
                             className="game-result-button"
                         >
                             🔍 Find a match
