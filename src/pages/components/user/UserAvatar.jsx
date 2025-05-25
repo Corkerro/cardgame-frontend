@@ -5,9 +5,13 @@ import { toast } from 'react-toastify';
 export default function UserAvatar({ avatarUrl, onAvatarChange, editable }) {
     const [preview, setPreview] = useState(avatarUrl);
     const [uploading, setUploading] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
     useEffect(() => {
-        if (!uploading) setPreview(avatarUrl);
+        if (!uploading) {
+            setPreview(avatarUrl);
+            setImgError(false);
+        }
     }, [avatarUrl, uploading]);
 
     const handleFileSelect = async (file) => {
@@ -52,16 +56,26 @@ export default function UserAvatar({ avatarUrl, onAvatarChange, editable }) {
 
         const objectUrl = URL.createObjectURL(file);
         setPreview(objectUrl);
+        setImgError(false);
 
         handleFileSelect(file).finally(() => {
             URL.revokeObjectURL(objectUrl);
         });
     };
 
+    const handleImgError = () => {
+        setImgError(true);
+    };
+
     return (
         <div className="user__avatar">
-            {preview ? (
-                <img src={preview} alt="avatar" className="user__avatar_img" />
+            {!imgError && preview ? (
+                <img
+                    src={preview}
+                    alt="avatar"
+                    className="user__avatar_img"
+                    onError={handleImgError}
+                />
             ) : (
                 <div className="user__avatar_placeholder" />
             )}
