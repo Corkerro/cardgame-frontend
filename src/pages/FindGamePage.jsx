@@ -29,6 +29,7 @@ export default function FindGamePage() {
     const startTimeRef = useRef(null);
     const [enemyAvatarUrl, setEnemyAvatarUrl] = useState(null);
     const socket = useNamespaceSocket('matchmaking');
+    const enemyNameRef = useRef(null);
 
     useEffect(() => {
         if (!searching || !socket || !socket.connected) return;
@@ -49,21 +50,24 @@ export default function FindGamePage() {
 
         const handleMatchFound = (data) => {
             const timeout = data.countdown ? data.countdown * 500 : 1000;
+
             setTimeout(() => {
                 console.log('Match found data from server:', data);
                 setFinalEnemy(data.opponentName || 'EnemyPlayer');
+                enemyNameRef.current = data.opponentName || 'EnemyPlayer';
+                setEnemyName(data.opponentName || 'EnemyPlayer');
                 setSearching(false);
                 clearInterval(nameInterval);
                 clearInterval(timer);
-                setEnemyName(data.opponentName || 'EnemyPlayer');
                 setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
             }, timeout);
         };
 
         const handleGameStart = (data) => {
+            console.log('handleGameStart', finalEnemy);
             console.log('Game start data from server:', data);
             navigate('/game', {
-                state: { opponentName: enemyName || 'EnemyPlayer', gameId: data.gameId },
+                state: { opponentName: enemyNameRef.current || 'EnemyPlayer', gameId: data.gameId },
             });
         };
 
@@ -130,8 +134,8 @@ export default function FindGamePage() {
                     {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '00:00'}
                 </p>
 
-                <button type="button" className="button findgame__button" onClick={handleFindGame}>
-                    {searching ? 'Cancel' : 'Find Game'}
+                <button type="button" className="button findgame__button" onClick={handleFindGame} disabled={!!finalEnemy}>
+                    {searching ? 'Cancel' : finalEnemy ? 'Match found' : 'Find Game'}
                 </button>
             </div>
         </div>

@@ -9,7 +9,7 @@ export const MultiSocketProvider = ({ children }) => {
     const [sockets, setSockets] = useState({});
 
     useEffect(() => {
-        const namespaces = ['matchmaking', ''];
+        const namespaces = ['matchmaking', 'game'];
         const createdSockets = {};
 
         namespaces.forEach((ns) => {
