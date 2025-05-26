@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../../assets/styles/game/gamepage.scss';
 import '../../assets/styles/game/card.scss';
 import Player from './Player.jsx';
@@ -8,6 +8,7 @@ import parseJwt from '../../components/ParseJwt.js';
 import getCookie from '../../components/GetCookie.js';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNamespaceSocket } from '../../components/MultiSocketContext.jsx';
+import { toast } from 'react-toastify';
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -32,10 +33,12 @@ export default function GamePage({ onNavigate }) {
     const [currentTurn, setCurrentTurn] = useState('');
     const [timer, setTimer] = useState(turnTime);
     const [gameOver, setGameOver] = useState(false);
-    const [gameResult, setGameResult] = useState(null);
     const [awaitingBattle, setAwaitingBattle] = useState(false);
     const [playerHasMoved, setPlayerHasMoved] = useState(false);
     const [enemyHasMoved, setEnemyHasMoved] = useState(false);
+    const gameResultRef = useRef(null);
+    const deckCardsCount = useRef(40);
+    const prevEnemyHandLength = useRef( 4);
 
     useEffect(() => {
         if (gameOver) return;
@@ -53,14 +56,16 @@ export default function GamePage({ onNavigate }) {
     }, [playerHP, enemyHP]);
 
     useEffect(() => {
-        if (gameOver) setGameResult(playerHP <= 0 ? 'lose' : 'win');
+        if (gameOver) {
+            gameResultRef.current = playerHP <= 0 ? 'lose' : 'win';
+        }
     }, [gameOver]);
 
     useEffect(() => {
         if (playerHasMoved && enemyHasMoved && awaitingBattle && !gameOver) {
             const battleTimeout = setTimeout(() => {
                 resolveBattle();
-                drawCardsForBoth();
+                // drawCardsForBoth();
                 setCurrentTurn((prev) => (prev === 'player' ? 'enemy' : 'player'));
                 setTimer(turnTime);
                 setAwaitingBattle(false);
@@ -71,21 +76,21 @@ export default function GamePage({ onNavigate }) {
         }
     }, [playerHasMoved, enemyHasMoved, awaitingBattle, gameOver]);
 
-    function drawCardsForBoth() {
-        const playerSpace = maxHandSize - playerHand.length;
-        const enemySpace = maxHandSize - enemyHandLength;
-        const totalNeeded = playerSpace + enemySpace;
-
-        const cardsToDraw = mainDeck.slice(0, totalNeeded);
-        const newDeck = mainDeck.slice(totalNeeded);
-
-        const newPlayerCards = cardsToDraw.slice(0, playerSpace);
-        const newEnemyCardsCount = cardsToDraw.length - newPlayerCards.length;
-
-        setPlayerHand((prev) => [...prev, ...newPlayerCards]);
-        setEnemyHandLength((prev) => prev + newEnemyCardsCount);
-        setMainDeck(newDeck);
-    }
+    // function drawCardsForBoth() {
+    //     const playerSpace = maxHandSize - playerHand.length;
+    //     const enemySpace = maxHandSize - enemyHandLength;
+    //     const totalNeeded = playerSpace + enemySpace;
+    //
+    //     const cardsToDraw = mainDeck.slice(0, totalNeeded);
+    //     const newDeck = mainDeck.slice(totalNeeded);
+    //
+    //     const newPlayerCards = cardsToDraw.slice(0, playerSpace);
+    //     const newEnemyCardsCount = cardsToDraw.length - newPlayerCards.length;
+    //
+    //     setPlayerHand((prev) => [...prev, ...newPlayerCards]);
+    //     setEnemyHandLength((prev) => prev + newEnemyCardsCount);
+    //     setMainDeck(newDeck);
+    // }
 
     function resolveBattle() {
         const playerAttackSum = playerBoard.reduce((sum, card) => sum + card.damage, 0);
@@ -105,10 +110,26 @@ export default function GamePage({ onNavigate }) {
 
     function playCard(index) {
         if (gameOver || currentTurn !== 'player') return;
-        if (playerBoard.length >= maxBoardSize) return alert('No more space on the board!');
+        if (playerBoard.length >= maxBoardSize) {
+            toast.error(
+                <div>
+                    <div style={{ fontWeight: 'bold' }}>No more space on the board!</div>
+                </div>,
+            );
+            console.log('No more space on the board!');
+            return;
+        }
 
         const card = playerHand[index];
-        if (playerMoney < card.cost) return alert('Not enough money to play this card!');
+        if (playerMoney < card.cost) {
+            toast.error(
+                <div>
+                    <div style={{ fontWeight: 'bold' }}>Not enough money to play this card!</div>
+                </div>,
+            );
+            console.log('Not enough money to play this card!');
+            return;
+        }
 
         socket.emit(
             'playCard',
@@ -119,8 +140,15 @@ export default function GamePage({ onNavigate }) {
             (res) => {
                 if (res.success) {
                     setPlayerHasMoved(true);
+                    deckCardsCount.current -= 1;
                 } else {
-                    alert('Failed to play card: ' + res.error);
+                    toast.error(
+                        <div>
+                            <div style={{ fontWeight: 'bold' }}>Failed to play card!</div>
+                            <div style={{ fontSize: '0.9rem' }}>{res.error}</div>
+                        </div>,
+                    );
+                    console.log('Failed to play card: ' + res.error);
                 }
             },
         );
@@ -134,7 +162,13 @@ export default function GamePage({ onNavigate }) {
                 const currentPlayerUsername = res.data.currentPlayerUsername;
                 setCurrentTurn(currentPlayerUsername === player.username ? 'player' : 'enemy');
             } else {
-                alert('Failed to pass turn: ' + res.error);
+                toast.error(
+                    <div>
+                        <div style={{ fontWeight: 'bold' }}>Failed to pass turn!</div>
+                        <div style={{ fontSize: '0.9rem' }}>{res.error}</div>
+                    </div>,
+                );
+                console.log('Failed to pass turn: ' + res.error);
             }
         });
     }
@@ -153,6 +187,12 @@ export default function GamePage({ onNavigate }) {
 
     useEffect(() => {
         function updateGameState(game) {
+            if (game.isFinished) {
+                setGameOver(true);
+                gameResultRef.current = game.winnerUsername === player.username ? 'win' : 'lose';
+                return;
+            }
+
             const currentPlayerUsername = game.currentPlayerUsername;
 
             const me = game.players.find((p) => p.username === player.username);
@@ -168,6 +208,12 @@ export default function GamePage({ onNavigate }) {
             setEnemyMoney(opponent.coins);
 
             setCurrentTurn(currentPlayerUsername === player.username ? 'player' : 'enemy');
+
+            if (opponent.cardsCount < prevEnemyHandLength.current) {
+                deckCardsCount.current -= 1;
+            }
+            prevEnemyHandLength.current = opponent.cardsCount;
+
         }
 
         if (!location.state?.gameId) return;
@@ -182,6 +228,7 @@ export default function GamePage({ onNavigate }) {
                 if (res.success) {
                     updateGameState(res.data);
                     console.log(res.data);
+                    prevEnemyHandLength.current = res.data.gameSettings.initialCards;
                 } else {
                     console.error('Failed to join game:', res.message);
                 }
@@ -200,15 +247,21 @@ export default function GamePage({ onNavigate }) {
     return (
         <div className="gamepage">
             <aside className="gamepage__aside">
-                <Player player={enemy} otherClasses={'reverse'} />
+                <Player
+                    player={enemy}
+                    otherClasses={`reverse ${gameResultRef.current === 'win' ? 'destroy' : ''}`}
+                />
                 <img src="logo.png" alt="" className="gamepage__logo" />
-                <Player player={player} />
+                <Player
+                    player={player}
+                    otherClasses={`${gameResultRef.current === 'lose' ? 'destroy' : ''}`}
+                />
             </aside>
             <div className="gamebox">
                 <div className="enemy-hand-container">
                     <div className="enemy-deck-visual">
                         <EnemyCard />
-                        <div className="enemy-deck-count">{mainDeck.length}</div>
+                        <div className="enemy-deck-count">{deckCardsCount.current}</div>
                     </div>
                     <div className="enemy-hand hand">
                         {Array.from({ length: enemyHandLength }).map((_, i) => (
@@ -252,10 +305,10 @@ export default function GamePage({ onNavigate }) {
 
                 <div className={`timer ${timer <= 10 ? 'low' : ''}`}>⏳ {timer}s</div>
             </div>
-            {gameResult && (
+            {gameResultRef.current && (
                 <div className="game-result-overlay">
                     <div className="game-result-message">
-                        {gameResult === 'win' ? 'You Win!' : 'You Lose!'}
+                        {gameResultRef.current === 'win' ? 'You Win!' : 'You Lose!'}
                     </div>
                     <div className="game-result-buttons">
                         <button onClick={() => navigate('/')} className="game-result-button">

@@ -67,12 +67,18 @@ export default function FindGamePage() {
             console.log('handleGameStart', finalEnemy);
             console.log('Game start data from server:', data);
             navigate('/game', {
-                state: { opponentName: enemyNameRef.current || 'EnemyPlayer', gameId: data.gameId },
+                state: {
+                    opponentName: enemyNameRef.current || 'EnemyPlayer',
+                    gameId: data.gameId,
+                    gameSettings: data.gameSettings,
+                },
             });
         };
 
         socket.on('matchFound', handleMatchFound);
-        socket.on('gameStart', handleGameStart);
+        socket.on('gameStart', handleGameStart, (res) => {
+            console.log(res)
+        });
 
         return () => {
             socket.off('matchFound', handleMatchFound);
@@ -134,7 +140,12 @@ export default function FindGamePage() {
                     {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '00:00'}
                 </p>
 
-                <button type="button" className="button findgame__button" onClick={handleFindGame} disabled={!!finalEnemy}>
+                <button
+                    type="button"
+                    className="button findgame__button"
+                    onClick={handleFindGame}
+                    disabled={!!finalEnemy}
+                >
                     {searching ? 'Cancel' : finalEnemy ? 'Match found' : 'Find Game'}
                 </button>
             </div>

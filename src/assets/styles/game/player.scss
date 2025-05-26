@@ -7,6 +7,12 @@
         flex-direction: column-reverse;
     }
 
+    &.destroy {
+        & .player__ava img {
+            animation: destroyEffect 0.5s ease-out forwards;
+        }
+    }
+
     &__name {
         font-size: 36px;
         color: var(--font-color-3);
@@ -34,6 +40,7 @@
             height: 64px;
             border-radius: 50%;
             object-fit: cover;
+            transition: opacity 0.3s ease;
         }
     }
 
@@ -51,5 +58,17 @@
             font-size: 36px;
             font-weight: bold;
         }
+    }
+}
+
+@keyframes destroyEffect {
+    0% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5) rotate(90deg);
+        pointer-events: none;
     }
 }
