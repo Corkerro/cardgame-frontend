@@ -9,11 +9,11 @@ import './assets/styles/base.scss';
 import GamePage from './pages/GamePage/GamePage.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
 import FindGamePage from './pages/FindGamePage.jsx';
-import { SocketProvider } from './components/SocketContext.jsx';
+import { MultiSocketProvider } from './components/MultiSocketContext.jsx';
 
 function App() {
     return (
-        <SocketProvider>
+        <MultiSocketProvider>
             <Router>
                 <Routes>
                     <Route path="/auth" element={<AuthPage />} />
@@ -41,7 +41,7 @@ function App() {
                     theme="colored"
                 />
             </Router>
-        </SocketProvider>
+        </MultiSocketProvider>
     );
 }
 

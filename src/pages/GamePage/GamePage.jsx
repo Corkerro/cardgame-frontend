@@ -6,7 +6,8 @@ import Card from './Card.jsx';
 import EnemyCard from './EnemyCard.jsx';
 import parseJwt from '../../components/ParseJwt.js';
 import getCookie from '../../components/GetCookie.js';
-import {useLocation, useNavigate} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useNamespaceSocket } from '../../components/MultiSocketContext.jsx';
 
 const initialHP = 20;
 const maxHandSize = 5;
@@ -47,6 +48,8 @@ function getRandomCard() {
 }
 
 export default function GamePage({ onNavigate }) {
+    const socket = useNamespaceSocket('');
+
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -70,7 +73,7 @@ export default function GamePage({ onNavigate }) {
     const [enemyFirstTurnStarted, setEnemyFirstTurnStarted] = useState(false);
 
     useEffect(() => {
-        const shuffledDeck = Array.from({ length: 30 }, getRandomCard); // 30 карт для двоих
+        const shuffledDeck = Array.from({ length: 20 }, getRandomCard); // 30 карт для двоих
         const playerStart = shuffledDeck.slice(0, maxHandSize);
         const enemyStart = shuffledDeck.slice(maxHandSize, maxHandSize * 2);
         const remaining = shuffledDeck.slice(maxHandSize * 2);
@@ -236,6 +239,11 @@ export default function GamePage({ onNavigate }) {
         money: enemyMoney,
         username: location.state?.opponentName || 'Unknown',
     };
+
+    socket.emit('joinGame', {
+        gameId: Number(location.state?.gameId),
+        username: player.username,
+    });
 
     return (
         <div className="gamepage">

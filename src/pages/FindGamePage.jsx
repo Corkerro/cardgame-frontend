@@ -4,7 +4,7 @@ import UserItem from './components/user/UserItem.jsx';
 import { useNavigate } from 'react-router-dom';
 import parseJwt from '../components/ParseJwt.js';
 import getCookie from '../components/GetCookie.js';
-import { useSocket } from '../components/SocketContext.jsx';
+import { useNamespaceSocket } from '../components/MultiSocketContext.jsx';
 
 const possibleNames = [
     'SkullSlasher',
@@ -26,9 +26,9 @@ export default function FindGamePage() {
     const [finalEnemy, setFinalEnemy] = useState(null);
     const navigate = useNavigate();
     const baseURL = import.meta.env.VITE_API_BASE_URL;
-    const socket = useSocket();
     const startTimeRef = useRef(null);
     const [enemyAvatarUrl, setEnemyAvatarUrl] = useState(null);
+    const socket = useNamespaceSocket('matchmaking');
 
     useEffect(() => {
         if (!searching || !socket || !socket.connected) return;
@@ -48,20 +48,27 @@ export default function FindGamePage() {
         socket.emit('joinQueue');
 
         const handleMatchFound = (data) => {
-            console.log('Match found data from server:', data);
-            setFinalEnemy(data.opponentName || 'EnemyPlayer');
-            setSearching(false);
-            clearInterval(nameInterval);
-            clearInterval(timer);
-            setEnemyName(data.opponentName || 'EnemyPlayer');
-            setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
-
+            const timeout = data.countdown ? data.countdown * 500 : 1000;
             setTimeout(() => {
-                navigate('/game', { state: { opponentName: data.opponentName || 'EnemyPlayer' } });
-            }, 1000);
+                console.log('Match found data from server:', data);
+                setFinalEnemy(data.opponentName || 'EnemyPlayer');
+                setSearching(false);
+                clearInterval(nameInterval);
+                clearInterval(timer);
+                setEnemyName(data.opponentName || 'EnemyPlayer');
+                setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
+            }, timeout);
+        };
+
+        const handleGameStart = (data) => {
+            console.log('Game start data from server:', data);
+            navigate('/game', {
+                state: { opponentName: enemyName || 'EnemyPlayer', gameId: data.gameId },
+            });
         };
 
         socket.on('matchFound', handleMatchFound);
+        socket.on('gameStart', handleGameStart);
 
         return () => {
             socket.off('matchFound', handleMatchFound);
