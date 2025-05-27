@@ -4,7 +4,7 @@ import '../assets/styles/profile.scss';
 import UserItem from './components/user/UserItem';
 import getCookie from '../components/GetCookie.js';
 import parseJwt from '../components/ParseJwt.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     LineChart,
     Line,
@@ -14,14 +14,14 @@ import {
     ResponsiveContainer,
     CartesianGrid,
 } from 'recharts';
-import { useParams } from 'react-router-dom';
 
 export default function ProfilePage() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const [chartMode, setChartMode] = useState('percent'); // 'percent' | 'cum'
 
+    const navigate = useNavigate();
     const { username: routeUsername } = useParams();
     const jwt = getCookie('jwt');
     const myUsername = parseJwt(jwt)?.username;
@@ -53,19 +53,24 @@ export default function ProfilePage() {
 
     const { gamesCount, winsCount, lossesCount, winrate, games } = userData;
 
+    let winCount = 0;
     let cumValue = 0;
     const chartData = games
         .slice()
         .reverse()
-        .map((game) => {
+        .map((game, index) => {
+            const currentGameNumber = index + 1;
+            if (game.win) winCount++;
             cumValue += game.win ? 1 : -1;
+
             return {
                 name: new Date(game.date).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                 }),
-                cumValue,
                 win: game.win,
+                cumValue,
+                winratePercent: Math.round((winCount / currentGameNumber) * 100),
             };
         });
 
@@ -102,7 +107,10 @@ export default function ProfilePage() {
                         borderRadius: 4,
                     }}
                 >
-                    {data.win ? 'Win' : 'Loss'}: {data.cumValue}
+                    {data.win ? 'Win' : 'Loss'} –{' '}
+                    {chartMode === 'percent'
+                        ? `${data.winratePercent}%`
+                        : `${data.cumValue}`}
                 </div>
             );
         }
@@ -136,16 +144,26 @@ export default function ProfilePage() {
                     </p>
                 </div>
 
-                <div style={{ width: '100%', height: 300 }}>
+                <div style={{ width: '100%', height: 300, marginBottom: 40}}>
+                    <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                        <button
+                            className="button chart__toggle profile__button small"
+                            onClick={() =>
+                                setChartMode(chartMode === 'percent' ? 'cum' : 'percent')
+                            }
+                        >
+                            Switch to {chartMode === 'percent' ? 'Cumulative' : 'Winrate (%)'}
+                        </button>
+                    </div>
                     <ResponsiveContainer>
                         <LineChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
-                            <YAxis />
+                            <YAxis domain={chartMode === 'percent' ? [0, 100] : ['auto', 'auto']} />
                             <Tooltip content={<CustomTooltip />} />
                             <Line
                                 type="monotone"
-                                dataKey="cumValue"
+                                dataKey={chartMode === 'percent' ? 'winratePercent' : 'cumValue'}
                                 stroke="#4ade80"
                                 strokeWidth={2}
                                 dot={renderCustomDot}
