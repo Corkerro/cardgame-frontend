@@ -187,14 +187,6 @@ export default function GamePage({ onNavigate }) {
 
     useEffect(() => {
         function updateGameState(game) {
-            if (game.isFinished) {
-                setGameOver(true);
-                gameResultRef.current = game.winnerUsername === player.username ? 'win' : 'lose';
-                return;
-            }
-
-            const currentPlayerUsername = game.currentPlayerUsername;
-
             const me = game.players.find((p) => p.username === player.username);
             const opponent = game.players.find((p) => p.username !== player.username);
 
@@ -206,6 +198,14 @@ export default function GamePage({ onNavigate }) {
             setEnemyBoard(opponent.playedCards);
             setPlayerMoney(me.coins);
             setEnemyMoney(opponent.coins);
+
+            if (game.isFinished) {
+                setGameOver(true);
+                gameResultRef.current = game.winnerUsername === player.username ? 'win' : 'lose';
+                return;
+            }
+
+            const currentPlayerUsername = game.currentPlayerUsername;
 
             setCurrentTurn(currentPlayerUsername === player.username ? 'player' : 'enemy');
 

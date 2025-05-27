@@ -38,7 +38,11 @@ export default function ProfilePage() {
                 });
                 setUserData(response.data);
             } catch (err) {
-                setError('Failed to fetch user data');
+                if (err.response?.status === 400) {
+                    setError('Player not found');
+                } else {
+                    setError('Failed to fetch user data');
+                }
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -49,7 +53,19 @@ export default function ProfilePage() {
     }, [username, jwt]);
 
     if (loading) return <div className="profile__container">Loading...</div>;
-    if (error) return <div className="profile__container error">{error}</div>;
+
+    if (error) {
+        return (
+            <div className="profile">
+                <div className="profile__container error">
+                    <h1>{error}</h1>
+                    <button className="button profile__button" onClick={() => navigate('/')}>
+                        Back to Menu
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const { gamesCount, winsCount, lossesCount, winrate, games } = userData;
 
@@ -144,7 +160,7 @@ export default function ProfilePage() {
                     </p>
                 </div>
 
-                <div style={{ width: '100%', height: 300, marginBottom: 40}}>
+                <div style={{ width: '100%', height: 300, marginBottom: 40 }}>
                     <div style={{ marginBottom: '10px', textAlign: 'center' }}>
                         <button
                             className="button chart__toggle profile__button small"
@@ -174,7 +190,7 @@ export default function ProfilePage() {
                 </div>
 
                 <button className="button profile__button" onClick={() => navigate('/')}>
-                    Menu
+                    Back to Menu
                 </button>
             </div>
         </div>

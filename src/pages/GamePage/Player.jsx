@@ -11,10 +11,18 @@ export default function Player({ player, otherClasses }) {
 
     return (
         <div className={`player ${otherClasses}`}>
-            <p className="player__name" onClick={onProfileClickHandler}>{player.username}</p>
+            <p className="player__name" onClick={onProfileClickHandler}>
+                {player.username}
+            </p>
             <div className="player__block">
                 <div className="player__ava" onClick={onProfileClickHandler}>
-                    <img src={`${baseURL}/avatars/${player.username}_ava.jpg`} alt="Avatar" />
+                    <img
+                        src={`${baseURL}/avatars/${player.username}_ava.jpg`}
+                        alt="Avatar"
+                        onError={(e) => {
+                            e.target.style.display = 'none';
+                        }}
+                    />
                 </div>
                 <div className="player__stat hp">
                     <img src="hp.svg" alt="hp" />
