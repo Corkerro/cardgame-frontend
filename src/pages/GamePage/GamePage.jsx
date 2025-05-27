@@ -275,9 +275,22 @@ export default function GamePage({ onNavigate }) {
             <div className="gamebox">
                 <div className="enemy-hand-container">
                     <div className="enemy-deck-visual">
-                        <EnemyCard />
+                        {Array.from({ length: 10 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="enemy-deck-card"
+                                style={{
+                                    position: 'absolute',
+                                    top: `${i * 2}px`,
+                                    left: `${i * 2}px`,
+                                    zIndex: i,
+                                }}>
+                                <EnemyCard />
+                            </div>
+                        ))}
                         <div className="enemy-deck-count">{deckCardsCount.current}</div>
                     </div>
+
                     <div className="enemy-hand hand">
                         {Array.from({ length: enemyHandLength }).map((_, i) => (
                             <EnemyCard key={i} />
@@ -298,8 +311,7 @@ export default function GamePage({ onNavigate }) {
                 </div>
                 <div
                     className="player-hand hand"
-                    style={{ pointerEvents: currentTurn === 'player' ? 'auto' : 'none' }}
-                >
+                    style={{ pointerEvents: currentTurn === 'player' ? 'auto' : 'none' }}>
                     {playerHand.map((card, i) => (
                         <div key={i} onClick={() => playCard(i)}>
                             <Card card={card} />
@@ -309,8 +321,7 @@ export default function GamePage({ onNavigate }) {
                 <button
                     className="game-button"
                     onClick={handlePassTurn}
-                    disabled={gameOver || currentTurn !== 'player'}
-                >
+                    disabled={gameOver || currentTurn !== 'player'}>
                     {gameOver
                         ? 'Game Over'
                         : currentTurn === 'player'
@@ -331,8 +342,7 @@ export default function GamePage({ onNavigate }) {
                         </button>
                         <button
                             onClick={() => navigate('/find-game')}
-                            className="game-result-button"
-                        >
+                            className="game-result-button">
                             🔍 Find a match
                         </button>
                     </div>

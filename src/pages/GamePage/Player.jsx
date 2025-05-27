@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../assets/styles/game/player.scss';
-import {useNavigate} from "react-router-dom";
 
 export default function Player({ player, otherClasses }) {
     const baseURL = import.meta.env.VITE_API_BASE_URL;
