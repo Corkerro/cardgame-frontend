@@ -11,6 +11,10 @@ body {
     &:hover {
         background: var(--bg-color-1-hover);
     }
+
+    &.small {
+        font-size: 24px;
+    }
 }
 
 .danger {

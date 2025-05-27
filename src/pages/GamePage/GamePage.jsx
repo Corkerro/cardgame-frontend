@@ -38,7 +38,7 @@ export default function GamePage({ onNavigate }) {
     const [enemyHasMoved, setEnemyHasMoved] = useState(false);
     const gameResultRef = useRef(null);
     const deckCardsCount = useRef(40);
-    const prevEnemyHandLength = useRef( 4);
+    const prevEnemyHandLength = useRef(4);
 
     useEffect(() => {
         if (gameOver) return;
@@ -213,10 +213,18 @@ export default function GamePage({ onNavigate }) {
                 deckCardsCount.current -= 1;
             }
             prevEnemyHandLength.current = opponent.cardsCount;
-
         }
 
-        if (!location.state?.gameId) return;
+        if (!location.state?.gameId) {
+            console.error('Failed to join game!');
+            toast.error(
+                <div>
+                    <div style={{ fontWeight: 'bold' }}>Failed to join game!</div>
+                </div>,
+            );
+            navigate('/');
+            return;
+        }
 
         socket.emit(
             'joinGame',
@@ -231,6 +239,13 @@ export default function GamePage({ onNavigate }) {
                     prevEnemyHandLength.current = res.data.gameSettings.initialCards;
                 } else {
                     console.error('Failed to join game:', res.message);
+                    toast.error(
+                        <div>
+                            <div style={{ fontWeight: 'bold' }}>Failed to join game!</div>
+                            <div style={{ fontSize: '0.9rem' }}>{res.message}</div>
+                        </div>,
+                    );
+                    navigate('/');
                 }
             },
         );

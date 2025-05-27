@@ -23,6 +23,7 @@ export default function FindGamePage() {
     const [enemyName, setEnemyName] = useState('...');
     const [searching, setSearching] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0); // seconds
+    const [isMatchFound, setIsMatchFound] = useState(false);
     const [finalEnemy, setFinalEnemy] = useState(null);
     const navigate = useNavigate();
     const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -50,6 +51,7 @@ export default function FindGamePage() {
 
         const handleMatchFound = (data) => {
             const timeout = data.countdown ? data.countdown * 500 : 1000;
+            setIsMatchFound(true);
 
             setTimeout(() => {
                 console.log('Match found data from server:', data);
@@ -77,7 +79,7 @@ export default function FindGamePage() {
 
         socket.on('matchFound', handleMatchFound);
         socket.on('gameStart', handleGameStart, (res) => {
-            console.log(res)
+            console.log(res);
         });
 
         return () => {
@@ -127,12 +129,14 @@ export default function FindGamePage() {
                     <UserItem
                         userName={`${username}`}
                         initialAvatarUrl={`${baseURL}/avatars/${username}_ava.jpg`}
+                        isClicked={true}
                     />
                     <p>VS</p>
                     <UserItem
                         userName={enemyName}
                         otherClasses={'reverse'}
                         initialAvatarUrl={enemyAvatarUrl}
+                        isClicked={!!finalEnemy}
                     />
                 </div>
 
@@ -144,9 +148,13 @@ export default function FindGamePage() {
                     type="button"
                     className="button findgame__button"
                     onClick={handleFindGame}
-                    disabled={!!finalEnemy}
+                    disabled={!!isMatchFound}
                 >
                     {searching ? 'Cancel' : finalEnemy ? 'Match found' : 'Find Game'}
+                </button>
+
+                <button className="button profile__button small" onClick={() => navigate('/')}>
+                    Menu
                 </button>
             </div>
         </div>
