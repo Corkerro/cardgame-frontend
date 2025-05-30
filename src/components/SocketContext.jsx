@@ -41,6 +41,10 @@ export const SocketProvider = ({ children }) => {
             );
         });
 
+        socketIo.onAny((event, ...args) => {
+            console.log(`[Socket Event] ${event}:`, ...args);
+        });
+
         setSocket(socketIo);
 
         return () => {

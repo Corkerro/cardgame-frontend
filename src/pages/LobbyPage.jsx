@@ -16,6 +16,7 @@ export default function LobbyPage() {
     };
 
     const handleLogoutClick = () => {
+        document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         toast.success('Successfully logout!');
         navigate('/auth');
     };
@@ -34,6 +35,16 @@ export default function LobbyPage() {
 
                 <button type="button" className="button lobby__button" onClick={handlePlayClick}>
                     PLAY
+                </button>
+
+                <button
+                    type="button"
+                    className="button lobby__button small"
+                    onClick={() => {
+                        navigate('/profile');
+                    }}
+                >
+                    PROFILE
                 </button>
 
                 <button

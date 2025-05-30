@@ -6,19 +6,19 @@ export default function Card({ card }) {
             <ul className="card__stats">
                 <li className="card__stat">
                     <img src="sword.svg" alt="Attac" />
-                    <span>{card.attac}</span>
+                    <span>{card.damage}</span>
                 </li>
                 <li className="card__stat">
                     <img src="shield.svg" alt="Defense" />
-                    <span>{card.defense}</span>
+                    <span>{card.defence}</span>
                 </li>
                 <li className="card__stat">
                     <img src="money.svg" alt="Price" />
-                    <span>{card.price}</span>
+                    <span>{card.cost}</span>
                 </li>
             </ul>
 
-            <img src={`${card.imgUrl}`} alt={`${card.name}`} className="card__img" />
+            <img src={`${card.imageUrl}`} alt={`${card.name}`} className="card__img" />
 
             <p className="card__name">{card.name}</p>
         </div>

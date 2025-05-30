@@ -4,7 +4,7 @@ import UserItem from './components/user/UserItem.jsx';
 import { useNavigate } from 'react-router-dom';
 import parseJwt from '../components/ParseJwt.js';
 import getCookie from '../components/GetCookie.js';
-import { useSocket } from '../components/SocketContext.jsx';
+import { useNamespaceSocket } from '../components/MultiSocketContext.jsx';
 
 const possibleNames = [
     'SkullSlasher',
@@ -23,12 +23,14 @@ export default function FindGamePage() {
     const [enemyName, setEnemyName] = useState('...');
     const [searching, setSearching] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0); // seconds
+    const [isMatchFound, setIsMatchFound] = useState(false);
     const [finalEnemy, setFinalEnemy] = useState(null);
     const navigate = useNavigate();
     const baseURL = import.meta.env.VITE_API_BASE_URL;
-    const socket = useSocket();
     const startTimeRef = useRef(null);
     const [enemyAvatarUrl, setEnemyAvatarUrl] = useState(null);
+    const socket = useNamespaceSocket('matchmaking');
+    const enemyNameRef = useRef(null);
 
     useEffect(() => {
         if (!searching || !socket || !socket.connected) return;
@@ -48,20 +50,37 @@ export default function FindGamePage() {
         socket.emit('joinQueue');
 
         const handleMatchFound = (data) => {
-            console.log('Match found data from server:', data);
-            setFinalEnemy(data.opponentName || 'EnemyPlayer');
-            setSearching(false);
-            clearInterval(nameInterval);
-            clearInterval(timer);
-            setEnemyName(data.opponentName || 'EnemyPlayer');
-            setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
+            const timeout = data.countdown ? data.countdown * 500 : 1000;
+            setIsMatchFound(true);
 
             setTimeout(() => {
-                navigate('/game', { state: { opponentName: data.opponentName || 'EnemyPlayer' } });
-            }, 1000);
+                console.log('Match found data from server:', data);
+                setFinalEnemy(data.opponentName || 'EnemyPlayer');
+                enemyNameRef.current = data.opponentName || 'EnemyPlayer';
+                setEnemyName(data.opponentName || 'EnemyPlayer');
+                setSearching(false);
+                clearInterval(nameInterval);
+                clearInterval(timer);
+                setEnemyAvatarUrl(`${baseURL}/avatars/${data.opponentName}_ava.jpg`);
+            }, timeout);
+        };
+
+        const handleGameStart = (data) => {
+            console.log('handleGameStart', finalEnemy);
+            console.log('Game start data from server:', data);
+            navigate('/game', {
+                state: {
+                    opponentName: enemyNameRef.current || 'EnemyPlayer',
+                    gameId: data.gameId,
+                    gameSettings: data.gameSettings,
+                },
+            });
         };
 
         socket.on('matchFound', handleMatchFound);
+        socket.on('gameStart', handleGameStart, (res) => {
+            console.log(res);
+        });
 
         return () => {
             socket.off('matchFound', handleMatchFound);
@@ -110,12 +129,14 @@ export default function FindGamePage() {
                     <UserItem
                         userName={`${username}`}
                         initialAvatarUrl={`${baseURL}/avatars/${username}_ava.jpg`}
+                        isClicked={true}
                     />
                     <p>VS</p>
                     <UserItem
                         userName={enemyName}
                         otherClasses={'reverse'}
                         initialAvatarUrl={enemyAvatarUrl}
+                        isClicked={!!finalEnemy}
                     />
                 </div>
 
@@ -123,8 +144,17 @@ export default function FindGamePage() {
                     {searching || finalEnemy ? `${formatTime(elapsedTime)}` : '00:00'}
                 </p>
 
-                <button type="button" className="button findgame__button" onClick={handleFindGame}>
-                    {searching ? 'Cancel' : 'Find Game'}
+                <button
+                    type="button"
+                    className="button findgame__button"
+                    onClick={handleFindGame}
+                    disabled={!!isMatchFound}
+                >
+                    {searching ? 'Cancel' : finalEnemy ? 'Match found' : 'Find Game'}
+                </button>
+
+                <button className="button profile__button small" onClick={() => navigate('/')}>
+                    Menu
                 </button>
             </div>
         </div>

@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage/AuthPage';
 import LobbyPage from './pages/LobbyPage';
@@ -9,11 +8,12 @@ import './assets/styles/base.scss';
 import GamePage from './pages/GamePage/GamePage.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
 import FindGamePage from './pages/FindGamePage.jsx';
-import { SocketProvider } from './components/SocketContext.jsx';
+import { MultiSocketProvider } from './components/MultiSocketContext.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 
 function App() {
     return (
-        <SocketProvider>
+        <MultiSocketProvider>
             <Router>
                 <Routes>
                     <Route path="/auth" element={<AuthPage />} />
@@ -22,7 +22,10 @@ function App() {
                         <Route path="/" element={<LobbyPage />} />
                         <Route path="/game" element={<GamePage />} />
                         <Route path="/find-game" element={<FindGamePage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                     </Route>
+
+                    <Route path="/profile/:username" element={<ProfilePage />} />
 
                     {/* other routes */}
 
@@ -41,7 +44,7 @@ function App() {
                     theme="colored"
                 />
             </Router>
-        </SocketProvider>
+        </MultiSocketProvider>
     );
 }
 
